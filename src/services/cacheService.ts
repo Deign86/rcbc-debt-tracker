@@ -16,7 +16,7 @@ export class CacheService {
   /**
    * Save data to cache with a timestamp and version
    */
-  static set<T>(key: string, data: T, ttl: number = DEFAULT_TTL): void {
+  static set<T>(key: string, data: T, _ttl: number = DEFAULT_TTL): void {
     try {
       const entry: CacheEntry<T> = {
         data,
