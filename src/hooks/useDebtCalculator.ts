@@ -19,6 +19,7 @@ const MINIMUM_PAYMENT_FLOOR = 500; // Minimum ₱500
 
 export const useDebtCalculator = (initialDebt: DebtState) => {
   const [debtState, setDebtState] = useState<DebtState>(initialDebt);
+  const [customMinPayment, setCustomMinPayment] = useState<number | null>(null);
 
   /**
    * Calculate how a payment will be split between interest and principal
@@ -45,11 +46,16 @@ export const useDebtCalculator = (initialDebt: DebtState) => {
     
     const remainingBalance = Math.max(0, currentPrincipal - principalPayment);
     
-    // Calculate next minimum payment (5% of remaining or ₱500)
-    const nextMinimumPayment = Math.max(
-      remainingBalance * MINIMUM_PAYMENT_RATE,
-      remainingBalance > 0 ? MINIMUM_PAYMENT_FLOOR : 0
-    );
+    // Calculate next minimum payment (5% of remaining or ₱500, or custom if set)
+    let nextMinimumPayment: number;
+    if (customMinPayment !== null && remainingBalance > 0) {
+      nextMinimumPayment = customMinPayment;
+    } else {
+      nextMinimumPayment = Math.max(
+        remainingBalance * MINIMUM_PAYMENT_RATE,
+        remainingBalance > 0 ? MINIMUM_PAYMENT_FLOOR : 0
+      );
+    }
     
     return {
       interest: Math.round(interestPayment * 100) / 100,
@@ -57,7 +63,7 @@ export const useDebtCalculator = (initialDebt: DebtState) => {
       remainingBalance: Math.round(remainingBalance * 100) / 100,
       nextMinimumPayment: Math.round(nextMinimumPayment * 100) / 100,
     };
-  }, [debtState]);
+  }, [debtState, customMinPayment]);
 
   /**
    * Apply a payment and update the debt state
@@ -78,15 +84,31 @@ export const useDebtCalculator = (initialDebt: DebtState) => {
    * Manually adjust the principal (for corrections or lump sum adjustments)
    */
   const adjustPrincipal = useCallback((newPrincipal: number) => {
-    const nextMinimumPayment = Math.max(
-      newPrincipal * MINIMUM_PAYMENT_RATE,
-      newPrincipal > 0 ? MINIMUM_PAYMENT_FLOOR : 0
-    );
+    let nextMinimumPayment: number;
+    if (customMinPayment !== null && newPrincipal > 0) {
+      nextMinimumPayment = customMinPayment;
+    } else {
+      nextMinimumPayment = Math.max(
+        newPrincipal * MINIMUM_PAYMENT_RATE,
+        newPrincipal > 0 ? MINIMUM_PAYMENT_FLOOR : 0
+      );
+    }
     
     setDebtState(prev => ({
       ...prev,
       currentPrincipal: Math.round(newPrincipal * 100) / 100,
       minimumPayment: Math.round(nextMinimumPayment * 100) / 100,
+    }));
+  }, [customMinPayment]);
+
+  /**
+   * Update the custom minimum payment amount
+   */
+  const updateMinimumPayment = useCallback((newMinPayment: number) => {
+    setCustomMinPayment(newMinPayment);
+    setDebtState(prev => ({
+      ...prev,
+      minimumPayment: Math.round(newMinPayment * 100) / 100,
     }));
   }, []);
 
@@ -130,6 +152,7 @@ export const useDebtCalculator = (initialDebt: DebtState) => {
     calculatePayment,
     applyPayment,
     adjustPrincipal,
+    updateMinimumPayment,
     simulatePayments,
     monthlyRate: RCBC_MONTHLY_RATE,
     annualRate: RCBC_MONTHLY_RATE * 12,

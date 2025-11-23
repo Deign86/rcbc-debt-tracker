@@ -2,7 +2,13 @@
 
 A **mobile-first Progressive Web App (PWA)** for tracking and managing RCBC credit card debt repayment. Built with React, Vite, Firebase, and Tailwind CSS.
 
-![Dashboard Screenshot](./screenshot-dashboard.png)
+<div align="center">
+  <img src="assets/screenshot-light.png" alt="Light Mode" width="45%">
+  <img src="assets/screenshot-dark.png" alt="Dark Mode" width="45%">
+</div>
+
+### 🎨 Design
+Featuring a **Sage Green & Navy Blue** color palette inspired by the "Black Panther" aesthetic, ensuring a premium look in both light and dark modes.
 
 ## ✨ Features
 
@@ -142,7 +148,7 @@ rcbc-debt-tracker/
 - [ ] Charts and visualizations
 - [ ] Export payment history (PDF, CSV)
 - [ ] Multiple credit card support
-- [ ] Dark mode
+- [x] Dark mode
 - [ ] Offline support with service worker
 - [ ] Push notifications for payment reminders
 

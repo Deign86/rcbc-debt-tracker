@@ -1,11 +1,11 @@
 {
-  "name": "RCBC Debt Tracker",
+  "name": "Debt Repayment Program",
   "short_name": "Debt Tracker",
-  "description": "Track and manage your RCBC credit card debt repayment",
+  "description": "Track and manage your debt repayment with a calming matcha aesthetic",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0284c7",
+  "background_color": "#f4f8f3",
+  "theme_color": "#5a9660",
   "orientation": "portrait",
   "icons": [
     {

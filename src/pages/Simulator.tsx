@@ -28,8 +28,8 @@ export const Simulator = () => {
     }
   };
 
-  const schedule = showSchedule 
-    ? simulatePayments(parseFloat(monthlyPayment)) 
+  const schedule = showSchedule
+    ? simulatePayments(parseFloat(monthlyPayment))
     : [];
 
   const totalInterest = schedule.reduce((sum, month) => sum + month.interest, 0);
@@ -39,24 +39,24 @@ export const Simulator = () => {
   return (
     <div className="pb-6">
       {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-10">
+      <div className="bg-cream-50 dark:bg-matcha-800 shadow-sm sticky top-0 z-10">
         <div className="px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-900">Payment Simulator</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-matcha-900 dark:text-cream-50">Payment Simulator</h1>
+          <p className="text-sm text-matcha-600 dark:text-cream-200 mt-1">
             Plan your repayment strategy
           </p>
         </div>
       </div>
 
       {/* Simulator Input */}
-      <div className="bg-white rounded-2xl shadow-md p-6 mx-4 mt-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-cream-50 dark:bg-matcha-800 rounded-2xl shadow-md p-6 mx-4 mt-6 border border-transparent dark:border-cream-200/10">
+        <h2 className="text-lg font-semibold text-matcha-900 dark:text-cream-50 mb-4">
           Monthly Payment Amount
         </h2>
 
         <div className="mb-4">
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-matcha-600 dark:text-matcha-400 text-lg">
               ₱
             </span>
             <input
@@ -65,7 +65,7 @@ export const Simulator = () => {
               value={monthlyPayment}
               onChange={(e) => handleAmountChange(e.target.value)}
               placeholder="5000.00"
-              className="w-full pl-10 pr-4 py-4 text-2xl font-semibold border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none transition-colors"
+              className="w-full pl-10 pr-4 py-4 text-2xl font-semibold border-2 border-matcha-200 dark:border-matcha-600/20 dark:bg-matcha-800 dark:text-cream-50 rounded-xl focus:border-matcha-500 dark:focus:border-matcha-500 focus:outline-none transition-colors"
             />
           </div>
         </div>
@@ -79,7 +79,7 @@ export const Simulator = () => {
                 setMonthlyPayment(amount.toString());
                 setShowSchedule(false);
               }}
-              className="py-2 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 rounded-lg text-sm font-medium text-gray-700 transition-colors"
+              className="py-2 bg-matcha-100 dark:bg-matcha-700/30 hover:bg-matcha-200 dark:hover:bg-matcha-700/50 active:bg-matcha-300 dark:active:bg-matcha-700/70 rounded-lg text-sm font-medium text-matcha-800 dark:text-cream-100 transition-colors"
             >
               ₱{amount.toLocaleString()}
             </button>
@@ -89,7 +89,7 @@ export const Simulator = () => {
         <button
           onClick={handleSimulate}
           disabled={!monthlyPayment || parseFloat(monthlyPayment) <= 0}
-          className="w-full py-4 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors shadow-md"
+          className="w-full py-4 bg-matcha-600 hover:bg-matcha-700 active:bg-matcha-800 disabled:bg-matcha-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors shadow-md"
         >
           Calculate Payoff Timeline
         </button>
@@ -136,38 +136,38 @@ export const Simulator = () => {
 
           {/* Payment Schedule */}
           <div className="mx-4 mt-6 mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+            <h3 className="text-lg font-semibold text-matcha-900 dark:text-cream-50 mb-3">
               Payment Schedule
             </h3>
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            <div className="bg-cream-50 dark:bg-matcha-800 rounded-xl shadow-md overflow-hidden border border-transparent dark:border-cream-200/10">
               <div className="max-h-96 overflow-y-auto">
                 {schedule.map((month) => (
                   <div
                     key={month.month}
-                    className="p-4 border-b border-gray-100 last:border-b-0"
+                    className="p-4 border-b border-matcha-100 dark:border-matcha-700 last:border-b-0"
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="font-semibold text-gray-900">
+                        <p className="font-semibold text-matcha-900 dark:text-cream-100">
                           Month {month.month}
                         </p>
                         <div className="mt-1 space-y-0.5">
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-matcha-600 dark:text-matcha-400">
                             Interest: ₱{month.interest.toFixed(2)}
                           </p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-matcha-600 dark:text-matcha-400">
                             Principal: ₱{month.principal.toFixed(2)}
                           </p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-bold text-gray-900">
+                        <p className="text-lg font-bold text-matcha-900 dark:text-cream-100">
                           ₱{month.balance.toLocaleString('en-PH', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-matcha-600 dark:text-matcha-400 mt-1">
                           remaining
                         </p>
                       </div>
@@ -182,8 +182,8 @@ export const Simulator = () => {
 
       {/* Warning for low payments */}
       {showSchedule && schedule.length >= 60 && (
-        <div className="mx-4 mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
-          <p className="text-sm text-yellow-800">
+        <div className="mx-4 mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-xl">
+          <p className="text-sm text-yellow-800 dark:text-yellow-200">
             ⚠️ This payment amount will take over 5 years to pay off. Consider increasing your monthly payment to reduce interest charges.
           </p>
         </div>
