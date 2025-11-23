@@ -3,6 +3,7 @@ import { DebtCard } from '../components/DebtCard';
 import { PaymentForm } from '../components/PaymentForm';
 import { EditDebtSheet } from '../components/EditDebtSheet';
 import { EditMinPaymentSheet } from '../components/EditMinPaymentSheet';
+import { ResetModal } from '../components/ResetModal';
 import { useDebtCalculator } from '../hooks/useDebtCalculator';
 import {
   saveDebtState,
@@ -11,14 +12,13 @@ import {
   subscribeToPayments,
   resetAllData
 } from '../services/firestoreService';
+import { BILLING_CONSTANTS, getNextDueDate } from '../config/billingConstants';
 import type { Payment } from '../types/debt';
-
-const INITIAL_DEBT = 50249.75;
-const INITIAL_MIN_PAYMENT = 1508.00; // Updated to actual minimum payment
 
 export const Dashboard = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isMinPaymentEditOpen, setIsMinPaymentEditOpen] = useState(false);
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,11 +30,11 @@ export const Dashboard = () => {
     updateMinimumPayment,
     monthlyRate,
   } = useDebtCalculator({
-    currentPrincipal: INITIAL_DEBT,
-    interestRate: 0.035,
-    minimumPayment: INITIAL_MIN_PAYMENT,
+    currentPrincipal: BILLING_CONSTANTS.INITIAL_DEBT,
+    interestRate: BILLING_CONSTANTS.MONTHLY_INTEREST_RATE,
+    minimumPayment: BILLING_CONSTANTS.INITIAL_MIN_PAYMENT,
     statementDate: new Date(),
-    dueDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
+    dueDate: getNextDueDate(),
   });
 
   // Load debt state and payments from Firestore on mount
@@ -111,29 +111,23 @@ export const Dashboard = () => {
     }
   };
 
-  const handleReset = async () => {
-    const confirmMessage = 
-      'Are you sure you want to reset all data?\n\n' +
-      'This will:\n' +
-      '• Delete all payment history\n' +
-      '• Reset debt to initial amount\n' +
-      '• Clear all adjustments\n\n' +
-      'This action cannot be undone!';
-    
-    if (!window.confirm(confirmMessage)) {
-      return;
-    }
+  const handleResetClick = () => {
+    setIsResetModalOpen(true);
+  };
 
+  const handleResetConfirm = async () => {
     try {
       await resetAllData();
       // Reset to initial values
-      adjustPrincipal(INITIAL_DEBT);
-      updateMinimumPayment(INITIAL_MIN_PAYMENT);
+      adjustPrincipal(BILLING_CONSTANTS.INITIAL_DEBT);
+      updateMinimumPayment(BILLING_CONSTANTS.INITIAL_MIN_PAYMENT);
+      setIsResetModalOpen(false);
       alert('All data has been reset successfully.');
       window.location.reload();
     } catch (error) {
       console.error('Error resetting data:', error);
       alert('Failed to reset data. Please try again.');
+      setIsResetModalOpen(false);
     }
   };
 
@@ -161,7 +155,7 @@ export const Dashboard = () => {
             </div>
           </div>
           <button
-            onClick={handleReset}
+            onClick={handleResetClick}
             className="px-3 py-1.5 text-sm bg-cream-100 dark:bg-matcha-900 text-matcha-800 dark:text-cream-200 rounded-lg hover:bg-cream-200 dark:hover:bg-matcha-700 transition-colors font-medium border border-matcha-300 dark:border-matcha-600"
             title="Reset all data"
           >
@@ -249,6 +243,13 @@ export const Dashboard = () => {
         currentMinPayment={debtState.minimumPayment}
         onClose={() => setIsMinPaymentEditOpen(false)}
         onSave={updateMinimumPayment}
+      />
+
+      {/* Reset Modal */}
+      <ResetModal
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        onConfirm={handleResetConfirm}
       />
     </div>
   );
