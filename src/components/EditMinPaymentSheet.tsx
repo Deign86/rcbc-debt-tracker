@@ -1,27 +1,25 @@
 import { useState, useEffect } from 'react';
 
-interface EditDebtSheetProps {
+interface EditMinPaymentSheetProps {
   isOpen: boolean;
-  currentAmount: number;
+  currentMinPayment: number;
   onClose: () => void;
-  onSave: (newAmount: number, note: string) => void;
+  onSave: (newMinPayment: number) => void;
 }
 
-export const EditDebtSheet = ({
+export const EditMinPaymentSheet = ({
   isOpen,
-  currentAmount,
+  currentMinPayment,
   onClose,
   onSave
-}: EditDebtSheetProps) => {
+}: EditMinPaymentSheetProps) => {
   const [amount, setAmount] = useState('');
-  const [note, setNote] = useState('');
 
   useEffect(() => {
     if (isOpen) {
-      setAmount(currentAmount.toString());
-      setNote('');
+      setAmount(currentMinPayment.toString());
     }
-  }, [isOpen, currentAmount]);
+  }, [isOpen, currentMinPayment]);
 
   const handleAmountChange = (value: string) => {
     const sanitized = value.replace(/[^\d.]/g, '');
@@ -34,8 +32,8 @@ export const EditDebtSheet = ({
 
   const handleSave = () => {
     const numValue = parseFloat(amount);
-    if (!isNaN(numValue) && numValue >= 0) {
-      onSave(numValue, note || 'Manual adjustment');
+    if (!isNaN(numValue) && numValue > 0) {
+      onSave(numValue);
       onClose();
     }
   };
@@ -59,14 +57,17 @@ export const EditDebtSheet = ({
           </div>
 
           <div className="p-6 pb-8">
-            <h2 className="text-xl font-bold text-matcha-800 dark:text-cream-100 mb-6">
-              Adjust Debt Amount
+            <h2 className="text-xl font-bold text-matcha-800 dark:text-cream-100 mb-2">
+              Edit Minimum Payment
             </h2>
+            <p className="text-sm text-matcha-600 dark:text-cream-300 mb-6">
+              Update the minimum payment amount for accurate calculations. This affects payment simulations.
+            </p>
 
             {/* Amount Input */}
-            <div className="mb-4">
+            <div className="mb-6">
               <label className="block text-sm font-medium text-matcha-700 dark:text-cream-200 mb-2">
-                New Principal Amount
+                Minimum Payment Amount
               </label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-matcha-500 dark:text-matcha-400 text-lg">
@@ -82,20 +83,9 @@ export const EditDebtSheet = ({
                   autoFocus
                 />
               </div>
-            </div>
-
-            {/* Note Input */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-matcha-700 dark:text-cream-200 mb-2">
-                Note (Optional)
-              </label>
-              <input
-                type="text"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="e.g., Statement adjustment, Error correction"
-                className="w-full px-4 py-3 border-2 border-matcha-200 dark:border-matcha-600 rounded-xl focus:border-matcha-500 dark:focus:border-matcha-400 focus:outline-none transition-colors bg-white dark:bg-matcha-900 text-matcha-800 dark:text-cream-50 placeholder-matcha-300 dark:placeholder-matcha-600"
-              />
+              <p className="text-xs text-matcha-600 dark:text-cream-400 mt-2">
+                💡 RCBC calculates minimum as 5% of balance or ₱500, whichever is higher
+              </p>
             </div>
 
             {/* Action Buttons */}
