@@ -44,13 +44,17 @@ export function calculateMilestones(
     { percentage: 100, label: 'Debt Free! 🎉' },
   ];
 
-  return milestones.map(milestone => ({
-    percentage: milestone.percentage,
-    label: milestone.label,
-    reached: progressPercentage >= milestone.percentage,
-    amountPaid: (initialDebt * milestone.percentage) / 100,
-    remainingAmount: Math.max(0, (initialDebt * milestone.percentage) / 100 - totalPaid),
-  }));
+  return milestones.map(milestone => {
+    const targetAmount = (initialDebt * milestone.percentage) / 100;
+    const remaining = targetAmount - totalPaid;
+    return {
+      percentage: milestone.percentage,
+      label: milestone.label,
+      reached: progressPercentage >= milestone.percentage,
+      amountPaid: Math.round(targetAmount * 100) / 100,
+      remainingAmount: Math.round(Math.max(0, remaining) * 100) / 100,
+    };
+  });
 }
 
 /**

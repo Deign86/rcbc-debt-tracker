@@ -145,6 +145,9 @@ export const Dashboard = () => {
         minimumPayment: updatedCalculation.nextMinimumPayment,
       };
       await saveDebtState(updatedDebtState);
+      
+      // Force re-render by updating a key state value
+      previousPrincipalRef.current = updatedCalculation.remainingBalance;
 
       // Check if a new milestone was reached (non-blocking)
       const newMilestone = checkNewMilestone(
@@ -360,10 +363,10 @@ export const Dashboard = () => {
                         {payment.type === 'payment' && (
                           <div className="text-xs mt-1 space-y-0.5">
                             <p className="text-green-600">
-                              Principal: ₱{payment.principal.toFixed(2)}
+                              Principal: ₱{payment.principal.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </p>
                             <p className="text-red-600">
-                              Interest: ₱{payment.interest.toFixed(2)}
+                              Interest: ₱{payment.interest.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </p>
                           </div>
                         )}
