@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { Simulator } from './pages/Simulator';
 import { History } from './pages/History';
+import { Preferences } from './pages/Preferences';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/simulator" element={<Simulator />} />
             <Route path="/history" element={<History />} />
+            <Route path="/preferences" element={<Preferences />} />
           </Routes>
         </Layout>
       </BrowserRouter>
