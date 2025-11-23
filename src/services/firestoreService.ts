@@ -138,6 +138,14 @@ export const subscribeToDebtState = (
  */
 export const savePayment = async (payment: Omit<Payment, 'id'>): Promise<string> => {
   try {
+    // Validate payment data
+    if (!payment.amount || payment.amount <= 0) {
+      throw new Error('Invalid payment amount');
+    }
+    if (!payment.date || !(payment.date instanceof Date)) {
+      throw new Error('Invalid payment date');
+    }
+    
     const docRef = await addDoc(collection(db, PAYMENTS_COLLECTION), {
       amount: payment.amount,
       date: Timestamp.fromDate(payment.date),
@@ -149,15 +157,30 @@ export const savePayment = async (payment: Omit<Payment, 'id'>): Promise<string>
     });
     
     // Invalidate payment history cache since new payment was added
-    const keys = Object.keys(localStorage).filter(key => 
-      key.startsWith(CACHE_KEYS.PAYMENT_HISTORY)
-    );
-    keys.forEach(key => CacheService.remove(key));
+    try {
+      const keys = Object.keys(localStorage).filter(key => 
+        key.startsWith(CACHE_KEYS.PAYMENT_HISTORY)
+      );
+      keys.forEach(key => CacheService.remove(key));
+    } catch (cacheError) {
+      // Non-critical error, log and continue
+      console.warn('Failed to clear payment cache:', cacheError);
+    }
     
     return docRef.id;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error saving payment:', error);
-    throw error;
+    
+    // Provide more specific error messages
+    if (error?.code === 'permission-denied') {
+      throw new Error('Permission denied. Please check Firestore rules.');
+    } else if (error?.code === 'unavailable') {
+      throw new Error('Network unavailable. Please check your connection.');
+    } else if (error?.message) {
+      throw new Error(error.message);
+    }
+    
+    throw new Error('Failed to save payment');
   }
 };
 
@@ -288,29 +311,51 @@ export const resetAllData = async (): Promise<void> => {
     batch.delete(debtStateRef);
     
     // Get all payments and delete them
-    const paymentsQuery = query(collection(db, PAYMENTS_COLLECTION));
-    const paymentsSnapshot = await getDocs(paymentsQuery);
-    
-    paymentsSnapshot.forEach((doc) => {
-      batch.delete(doc.ref);
-    });
+    try {
+      const paymentsQuery = query(collection(db, PAYMENTS_COLLECTION));
+      const paymentsSnapshot = await getDocs(paymentsQuery);
+      
+      paymentsSnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+    } catch (error) {
+      console.warn('Error fetching payments for deletion:', error);
+    }
     
     // Get all milestones and delete them
-    const milestonesQuery = query(collection(db, MILESTONES_COLLECTION));
-    const milestonesSnapshot = await getDocs(milestonesQuery);
-    
-    milestonesSnapshot.forEach((doc) => {
-      batch.delete(doc.ref);
-    });
+    try {
+      const milestonesQuery = query(collection(db, MILESTONES_COLLECTION));
+      const milestonesSnapshot = await getDocs(milestonesQuery);
+      
+      milestonesSnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+    } catch (error) {
+      console.warn('Error fetching milestones for deletion:', error);
+    }
     
     // Commit all deletions
     await batch.commit();
     
     // Clear all caches after reset
-    CacheService.clearAll();
-  } catch (error) {
+    try {
+      CacheService.clearAll();
+    } catch (cacheError) {
+      console.warn('Failed to clear cache:', cacheError);
+    }
+  } catch (error: any) {
     console.error('Error resetting data:', error);
-    throw error;
+    
+    // Provide more specific error messages
+    if (error?.code === 'permission-denied') {
+      throw new Error('Permission denied. Please check Firestore rules.');
+    } else if (error?.code === 'unavailable') {
+      throw new Error('Network unavailable. Please check your connection.');
+    } else if (error?.message) {
+      throw new Error(error.message);
+    }
+    
+    throw new Error('Failed to reset data');
   }
 };
 
@@ -319,6 +364,11 @@ export const resetAllData = async (): Promise<void> => {
  */
 export const saveMilestoneAchievement = async (milestone: Omit<MilestoneAchievement, 'celebrated'>): Promise<void> => {
   try {
+    // Validate milestone data
+    if (!milestone.achievedDate || !(milestone.achievedDate instanceof Date)) {
+      throw new Error('Invalid milestone date');
+    }
+    
     const docRef = doc(db, MILESTONES_COLLECTION, `milestone-${milestone.milestone}`);
     await setDoc(docRef, {
       milestone: milestone.milestone,
@@ -326,8 +376,16 @@ export const saveMilestoneAchievement = async (milestone: Omit<MilestoneAchievem
       principalAtAchievement: milestone.principalAtAchievement,
       celebrated: false,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error saving milestone achievement:', error);
+    
+    // Milestone saving is non-critical, so we log but don't crash
+    if (error?.code === 'permission-denied') {
+      console.warn('Permission denied for milestone. Check Firestore rules.');
+    } else if (error?.code === 'unavailable') {
+      console.warn('Network unavailable. Milestone will be saved later.');
+    }
+    
     throw error;
   }
 };

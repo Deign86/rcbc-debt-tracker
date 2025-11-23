@@ -18,6 +18,7 @@ import {
   markMilestoneCelebrated,
   loadMilestoneAchievements,
 } from '../services/firestoreService';
+import { CacheService } from '../services/cacheService';
 import { BILLING_CONSTANTS, getNextDueDate } from '../config/billingConstants';
 import {
   calculateMilestones,
@@ -119,7 +120,7 @@ export const Dashboard = () => {
       await savePayment(newPayment);
       applyPayment(amount);
       
-      // Check if a new milestone was reached
+      // Check if a new milestone was reached (non-blocking)
       const newMilestone = checkNewMilestone(
         previousPrincipal,
         calculation.remainingBalance,
@@ -127,25 +128,30 @@ export const Dashboard = () => {
       );
       
       if (newMilestone?.reached) {
-        // Save the milestone achievement
-        await saveMilestoneAchievement({
+        // Save the milestone achievement in background (don't block payment)
+        saveMilestoneAchievement({
           milestone: newMilestone.milestone,
           achievedDate: new Date(),
           principalAtAchievement: calculation.remainingBalance,
+        }).then(() => {
+          // Trigger celebration
+          setCelebrationMilestone(newMilestone.milestone);
+          // Update achieved milestones list
+          return loadMilestoneAchievements();
+        }).then((updatedMilestones) => {
+          setAchievedMilestones(updatedMilestones);
+        }).catch((error) => {
+          console.error('Error saving milestone (non-critical):', error);
+          // Still show celebration even if save failed
+          setCelebrationMilestone(newMilestone.milestone);
         });
-        
-        // Trigger celebration
-        setCelebrationMilestone(newMilestone.milestone);
-        
-        // Update achieved milestones list
-        const updatedMilestones = await loadMilestoneAchievements();
-        setAchievedMilestones(updatedMilestones);
       }
       
       previousPrincipalRef.current = calculation.remainingBalance;
     } catch (error) {
       console.error('Error submitting payment:', error);
-      alert('Failed to save payment. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      alert(`Failed to save payment: ${errorMessage}. Please check your connection and try again.`);
     }
   };
 
@@ -164,7 +170,8 @@ export const Dashboard = () => {
       adjustPrincipal(newAmount);
     } catch (error) {
       console.error('Error adjusting debt:', error);
-      alert('Failed to save adjustment. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      alert(`Failed to save adjustment: ${errorMessage}. Please check your connection and try again.`);
     }
   };
 
@@ -175,6 +182,8 @@ export const Dashboard = () => {
   const handleResetConfirm = async () => {
     try {
       await resetAllData();
+      // Clear local cache as well
+      CacheService.clearAll();
       // Reset to initial values
       adjustPrincipal(BILLING_CONSTANTS.INITIAL_DEBT);
       updateMinimumPayment(BILLING_CONSTANTS.INITIAL_MIN_PAYMENT);
@@ -182,7 +191,8 @@ export const Dashboard = () => {
       setIsSuccessModalOpen(true);
     } catch (error) {
       console.error('Error resetting data:', error);
-      alert('Failed to reset data. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      alert(`Failed to reset data: ${errorMessage}. Please check your connection and try again.`);
       setIsResetModalOpen(false);
     }
   };
