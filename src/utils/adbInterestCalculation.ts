@@ -205,7 +205,8 @@ export function calculatePaymentSplit(
   } else {
     // Payment covers interest and reduces principal
     interestPayment = interestCharge;
-    principalPayment = paymentAmount - interestCharge;
+    // Cap principal payment at remaining balance (handle overpayment)
+    principalPayment = Math.min(currentBalance, paymentAmount - interestCharge);
   }
   
   const remainingBalance = Math.max(0, currentBalance - principalPayment);

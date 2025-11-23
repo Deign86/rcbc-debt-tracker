@@ -48,6 +48,11 @@ export const EditMinPaymentSheet = ({
     }
   };
 
+  const isValid = () => {
+    const numValue = parseCurrencyInput(amount);
+    return !isNaN(numValue) && numValue > 0;
+  };
+
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent side="bottom" className="max-w-2xl mx-auto bg-cream-50 dark:bg-matcha-900">
@@ -90,7 +95,7 @@ export const EditMinPaymentSheet = ({
           <Button variant="outline" onClick={onClose} className="flex-1 border-matcha-300 dark:border-matcha-600 text-matcha-700 dark:text-matcha-200 hover:bg-matcha-100 dark:hover:bg-matcha-800">
             Cancel
           </Button>
-          <Button onClick={handleSave} className="flex-1 bg-matcha-600 hover:bg-matcha-700 text-cream-50">
+          <Button onClick={handleSave} disabled={!isValid()} className="flex-1 bg-matcha-600 hover:bg-matcha-700 text-cream-50 disabled:opacity-50 disabled:cursor-not-allowed">
             Save Changes
           </Button>
         </SheetFooter>

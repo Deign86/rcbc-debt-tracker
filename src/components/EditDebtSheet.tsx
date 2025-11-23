@@ -42,10 +42,15 @@ export const EditDebtSheet = ({
 
   const handleSave = () => {
     const numValue = parseCurrencyInput(amount);
-    if (!isNaN(numValue) && numValue >= 0) {
+    if (!isNaN(numValue) && numValue > 0) {
       onSave(numValue, note || 'Manual adjustment');
       onClose();
     }
+  };
+
+  const isValid = () => {
+    const numValue = parseCurrencyInput(amount);
+    return !isNaN(numValue) && numValue > 0;
   };
 
   return (
@@ -95,7 +100,7 @@ export const EditDebtSheet = ({
           <Button variant="outline" onClick={onClose} className="flex-1 border-matcha-300 dark:border-matcha-600 text-matcha-700 dark:text-matcha-200 hover:bg-matcha-100 dark:hover:bg-matcha-800">
             Cancel
           </Button>
-          <Button onClick={handleSave} className="flex-1 bg-matcha-600 hover:bg-matcha-700 text-cream-50">
+          <Button onClick={handleSave} disabled={!isValid()} className="flex-1 bg-matcha-600 hover:bg-matcha-700 text-cream-50 disabled:opacity-50 disabled:cursor-not-allowed">
             Save Changes
           </Button>
         </SheetFooter>
