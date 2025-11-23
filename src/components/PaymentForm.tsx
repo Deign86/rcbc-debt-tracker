@@ -44,12 +44,12 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
   const quickAmounts = [500, 1000, 2000, 5000];
 
   return (
-    <div className="bg-cream-50 dark:bg-matcha-800 rounded-2xl shadow-md p-6 mx-4 mt-6 border border-matcha-200 dark:border-matcha-600">
-      <h2 className="text-lg font-semibold text-matcha-800 dark:text-cream-50 mb-4">Log Payment</h2>
+    <div className="bg-cream-50 dark:bg-matcha-800 rounded-2xl shadow-md p-6 mx-4 mt-6 border-2 border-matcha-300 dark:border-matcha-600">
+      <h2 className="text-lg font-bold text-matcha-900 dark:text-cream-50 mb-4">Log Payment</h2>
 
       {/* Payment Input */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-matcha-800 dark:text-cream-50 mb-2">
+        <label className="block text-sm font-semibold text-matcha-900 dark:text-cream-50 mb-2">
           Payment Amount
         </label>
         <div className="relative">
@@ -62,7 +62,7 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
             value={amount}
             onChange={(e) => handleAmountChange(e.target.value)}
             placeholder="0.00"
-            className="w-full pl-10 pr-4 py-4 text-2xl font-semibold border-2 border-matcha-200 dark:border-matcha-600 rounded-xl focus:border-matcha-500 dark:focus:border-matcha-400 focus:outline-none transition-colors bg-white dark:bg-matcha-900 text-matcha-800 dark:text-cream-50 placeholder-matcha-300 dark:placeholder-matcha-600"
+            className="w-full pl-10 pr-4 py-4 text-2xl font-semibold border-2 border-matcha-300 dark:border-matcha-600 rounded-xl focus:border-matcha-500 dark:focus:border-matcha-400 focus:outline-none transition-colors bg-white dark:bg-matcha-900 text-matcha-900 dark:text-cream-50 placeholder-matcha-400 dark:placeholder-matcha-600"
           />
         </div>
       </div>
@@ -73,7 +73,7 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
           <button
             key={quickAmount}
             onClick={() => handleAmountChange(quickAmount.toString())}
-            className="py-2 px-3 bg-matcha-100 dark:bg-matcha-700 hover:bg-matcha-200 dark:hover:bg-matcha-600 active:bg-matcha-300 dark:active:bg-matcha-500 rounded-lg text-sm font-medium text-matcha-800 dark:text-cream-50 transition-colors"
+            className="py-2 px-3 bg-matcha-100 dark:bg-matcha-700 hover:bg-matcha-200 dark:hover:bg-matcha-600 active:bg-matcha-300 dark:active:bg-matcha-500 rounded-lg text-sm font-semibold text-matcha-900 dark:text-cream-50 transition-colors"
           >
             ₱{quickAmount}
           </button>
@@ -82,9 +82,9 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
 
       {/* Payment Preview */}
       {calculation && (
-        <div className="bg-matcha-50 dark:bg-matcha-900 rounded-xl p-4 mb-4 space-y-2 border border-matcha-200 dark:border-matcha-700">
+        <div className="bg-matcha-50 dark:bg-matcha-900 rounded-xl p-4 mb-4 space-y-2 border-2 border-matcha-300 dark:border-matcha-700">
           <div className="flex justify-between text-sm">
-            <span className="text-matcha-700 dark:text-cream-200">Interest Payment</span>
+            <span className="text-matcha-800 dark:text-cream-200 font-medium">Interest Payment</span>
             <span className="font-semibold text-red-600">
               ₱{calculation.interest.toLocaleString('en-PH', {
                 minimumFractionDigits: 2,
@@ -93,7 +93,7 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-matcha-700 dark:text-cream-200">Principal Payment</span>
+            <span className="text-matcha-800 dark:text-cream-200 font-medium">Principal Payment</span>
             <span className="font-semibold text-green-600">
               ₱{calculation.principal.toLocaleString('en-PH', {
                 minimumFractionDigits: 2,
@@ -101,10 +101,10 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
               })}
             </span>
           </div>
-          <div className="pt-2 border-t border-matcha-200 dark:border-matcha-700">
+          <div className="pt-2 border-t border-matcha-300 dark:border-matcha-700">
             <div className="flex justify-between">
-              <span className="text-sm font-medium text-matcha-800 dark:text-cream-50">New Balance</span>
-              <span className="text-lg font-bold text-matcha-800 dark:text-cream-50">
+              <span className="text-sm font-semibold text-matcha-900 dark:text-cream-50">New Balance</span>
+              <span className="text-lg font-bold text-matcha-900 dark:text-cream-50">
                 ₱{calculation.remainingBalance.toLocaleString('en-PH', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2

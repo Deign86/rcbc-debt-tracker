@@ -59,13 +59,13 @@ export const EditDebtSheet = ({
           </div>
 
           <div className="p-6 pb-8">
-            <h2 className="text-xl font-bold text-matcha-800 dark:text-cream-100 mb-6">
+            <h2 className="text-xl font-bold text-matcha-900 dark:text-cream-50 mb-6">
               Adjust Debt Amount
             </h2>
 
             {/* Amount Input */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-matcha-700 dark:text-cream-200 mb-2">
+              <label className="block text-sm font-semibold text-matcha-800 dark:text-cream-100 mb-2">
                 New Principal Amount
               </label>
               <div className="relative">
@@ -78,7 +78,7 @@ export const EditDebtSheet = ({
                   value={amount}
                   onChange={(e) => handleAmountChange(e.target.value)}
                   placeholder="0.00"
-                  className="w-full pl-10 pr-4 py-4 text-2xl font-semibold border-2 border-matcha-200 dark:border-matcha-600 rounded-xl focus:border-matcha-500 dark:focus:border-matcha-400 focus:outline-none transition-colors bg-white dark:bg-matcha-900 text-matcha-800 dark:text-cream-50 placeholder-matcha-300 dark:placeholder-matcha-600"
+                  className="w-full pl-10 pr-4 py-4 text-2xl font-semibold border-2 border-matcha-300 dark:border-matcha-600 rounded-xl focus:border-matcha-500 dark:focus:border-matcha-400 focus:outline-none transition-colors bg-white dark:bg-matcha-900 text-matcha-900 dark:text-cream-50 placeholder-matcha-400 dark:placeholder-matcha-600"
                   autoFocus
                 />
               </div>
@@ -86,7 +86,7 @@ export const EditDebtSheet = ({
 
             {/* Note Input */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-matcha-700 dark:text-cream-200 mb-2">
+              <label className="block text-sm font-semibold text-matcha-800 dark:text-cream-100 mb-2">
                 Note (Optional)
               </label>
               <input
@@ -94,7 +94,7 @@ export const EditDebtSheet = ({
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="e.g., Statement adjustment, Error correction"
-                className="w-full px-4 py-3 border-2 border-matcha-200 dark:border-matcha-600 rounded-xl focus:border-matcha-500 dark:focus:border-matcha-400 focus:outline-none transition-colors bg-white dark:bg-matcha-900 text-matcha-800 dark:text-cream-50 placeholder-matcha-300 dark:placeholder-matcha-600"
+                className="w-full px-4 py-3 border-2 border-matcha-300 dark:border-matcha-600 rounded-xl focus:border-matcha-500 dark:focus:border-matcha-400 focus:outline-none transition-colors bg-white dark:bg-matcha-900 text-matcha-900 dark:text-cream-50 placeholder-matcha-400 dark:placeholder-matcha-600"
               />
             </div>
 
@@ -102,7 +102,7 @@ export const EditDebtSheet = ({
             <div className="flex gap-3">
               <button
                 onClick={onClose}
-                className="flex-1 py-3 border-2 border-matcha-300 dark:border-matcha-600 text-matcha-700 dark:text-cream-200 font-semibold rounded-xl hover:bg-matcha-50 dark:hover:bg-matcha-900 active:bg-matcha-100 dark:active:bg-matcha-700 transition-colors"
+                className="flex-1 py-3 border-2 border-matcha-400 dark:border-matcha-600 text-matcha-800 dark:text-cream-100 font-semibold rounded-xl hover:bg-matcha-50 dark:hover:bg-matcha-900 active:bg-matcha-100 dark:active:bg-matcha-700 transition-colors"
               >
                 Cancel
               </button>

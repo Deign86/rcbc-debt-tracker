@@ -57,16 +57,16 @@ export const EditMinPaymentSheet = ({
           </div>
 
           <div className="p-6 pb-8">
-            <h2 className="text-xl font-bold text-matcha-800 dark:text-cream-100 mb-2">
+            <h2 className="text-xl font-bold text-matcha-900 dark:text-cream-50 mb-2">
               Edit Minimum Payment
             </h2>
-            <p className="text-sm text-matcha-600 dark:text-cream-300 mb-6">
+            <p className="text-sm text-matcha-700 dark:text-cream-200 mb-6 font-medium">
               Update the minimum payment amount for accurate calculations. This affects payment simulations.
             </p>
 
             {/* Amount Input */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-matcha-700 dark:text-cream-200 mb-2">
+              <label className="block text-sm font-semibold text-matcha-800 dark:text-cream-100 mb-2">
                 Minimum Payment Amount
               </label>
               <div className="relative">
@@ -79,11 +79,11 @@ export const EditMinPaymentSheet = ({
                   value={amount}
                   onChange={(e) => handleAmountChange(e.target.value)}
                   placeholder="0.00"
-                  className="w-full pl-10 pr-4 py-4 text-2xl font-semibold border-2 border-matcha-200 dark:border-matcha-600 rounded-xl focus:border-matcha-500 dark:focus:border-matcha-400 focus:outline-none transition-colors bg-white dark:bg-matcha-900 text-matcha-800 dark:text-cream-50 placeholder-matcha-300 dark:placeholder-matcha-600"
+                  className="w-full pl-10 pr-4 py-4 text-2xl font-semibold border-2 border-matcha-300 dark:border-matcha-600 rounded-xl focus:border-matcha-500 dark:focus:border-matcha-400 focus:outline-none transition-colors bg-white dark:bg-matcha-900 text-matcha-900 dark:text-cream-50 placeholder-matcha-400 dark:placeholder-matcha-600"
                   autoFocus
                 />
               </div>
-              <p className="text-xs text-matcha-600 dark:text-cream-400 mt-2">
+              <p className="text-xs text-matcha-700 dark:text-cream-300 mt-2 font-medium">
                 💡 RCBC calculates minimum as 5% of balance or ₱500, whichever is higher
               </p>
             </div>
@@ -92,7 +92,7 @@ export const EditMinPaymentSheet = ({
             <div className="flex gap-3">
               <button
                 onClick={onClose}
-                className="flex-1 py-3 border-2 border-matcha-300 dark:border-matcha-600 text-matcha-700 dark:text-cream-200 font-semibold rounded-xl hover:bg-matcha-50 dark:hover:bg-matcha-900 active:bg-matcha-100 dark:active:bg-matcha-700 transition-colors"
+                className="flex-1 py-3 border-2 border-matcha-400 dark:border-matcha-600 text-matcha-800 dark:text-cream-100 font-semibold rounded-xl hover:bg-matcha-50 dark:hover:bg-matcha-900 active:bg-matcha-100 dark:active:bg-matcha-700 transition-colors"
               >
                 Cancel
               </button>
