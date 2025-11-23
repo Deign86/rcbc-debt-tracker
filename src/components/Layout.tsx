@@ -21,7 +21,7 @@ export const Layout = ({ children, resetButton }: LayoutProps) => {
   const location = useLocation();
 
   return (
-    <div className="flex h-screen bg-cream-50 dark:bg-matcha-950 transition-colors">
+    <div className="flex h-screen transition-colors">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex flex-col w-64 xl:w-72 border-r border-matcha-200 dark:border-matcha-800 bg-cream-100 dark:bg-matcha-900">
         <div className="p-6">
