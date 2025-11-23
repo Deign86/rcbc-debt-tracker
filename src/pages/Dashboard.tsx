@@ -136,18 +136,10 @@ export const Dashboard = () => {
       await savePayment(newPayment);
       
       // Apply payment to update local state
-      const updatedCalculation = applyPayment(amount);
+      applyPayment(amount);
       
-      // Immediately save the updated debt state to Firestore
-      const updatedDebtState = {
-        ...debtState,
-        currentPrincipal: updatedCalculation.remainingBalance,
-        minimumPayment: updatedCalculation.nextMinimumPayment,
-      };
-      await saveDebtState(updatedDebtState);
-      
-      // Force re-render by updating a key state value
-      previousPrincipalRef.current = updatedCalculation.remainingBalance;
+      // Note: debtState will be updated by applyPayment's setDebtState call
+      // and automatically saved by the useEffect that watches debtState
 
       // Check if a new milestone was reached (non-blocking)
       const newMilestone = checkNewMilestone(
