@@ -132,8 +132,19 @@ export const Dashboard = () => {
         type: 'payment' as const,
       };
 
+      // Save payment first
       await savePayment(newPayment);
-      applyPayment(amount);
+      
+      // Apply payment to update local state
+      const updatedCalculation = applyPayment(amount);
+      
+      // Immediately save the updated debt state to Firestore
+      const updatedDebtState = {
+        ...debtState,
+        currentPrincipal: updatedCalculation.remainingBalance,
+        minimumPayment: updatedCalculation.nextMinimumPayment,
+      };
+      await saveDebtState(updatedDebtState);
 
       // Check if a new milestone was reached (non-blocking)
       const newMilestone = checkNewMilestone(
@@ -192,6 +203,20 @@ export const Dashboard = () => {
 
       await savePayment(adjustment);
       adjustPrincipal(newAmount);
+      
+      // Calculate new minimum payment
+      const nextMinimumPayment = Math.max(
+        newAmount * BILLING_CONSTANTS.MINIMUM_PAYMENT_RATE,
+        newAmount > 0 ? BILLING_CONSTANTS.MINIMUM_PAYMENT_FLOOR : 0
+      );
+      
+      // Immediately save the updated debt state to Firestore
+      const updatedDebtState = {
+        ...debtState,
+        currentPrincipal: newAmount,
+        minimumPayment: Math.round(nextMinimumPayment * 100) / 100,
+      };
+      await saveDebtState(updatedDebtState);
     } catch (error) {
       showError(error, 'Failed to save debt adjustment');
     }
