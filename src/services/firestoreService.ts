@@ -10,7 +10,8 @@ import {
   getDocs,
   onSnapshot,
   Timestamp,
-  writeBatch
+  writeBatch,
+  deleteDoc
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import type { DebtState, Payment } from '../types/debt';
@@ -181,6 +182,19 @@ export const subscribeToPayments = (
   }, (error) => {
     console.error('Error subscribing to payments:', error);
   });
+};
+
+/**
+ * Delete a single payment by ID
+ */
+export const deletePayment = async (paymentId: string): Promise<void> => {
+  try {
+    const docRef = doc(db, PAYMENTS_COLLECTION, paymentId);
+    await deleteDoc(docRef);
+  } catch (error) {
+    console.error('Error deleting payment:', error);
+    throw error;
+  }
 };
 
 /**

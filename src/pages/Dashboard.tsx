@@ -4,6 +4,7 @@ import { PaymentForm } from '../components/PaymentForm';
 import { EditDebtSheet } from '../components/EditDebtSheet';
 import { EditMinPaymentSheet } from '../components/EditMinPaymentSheet';
 import { ResetModal } from '../components/ResetModal';
+import { SuccessModal } from '../components/SuccessModal';
 import { useDebtCalculator } from '../hooks/useDebtCalculator';
 import {
   saveDebtState,
@@ -19,6 +20,7 @@ export const Dashboard = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isMinPaymentEditOpen, setIsMinPaymentEditOpen] = useState(false);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -122,13 +124,17 @@ export const Dashboard = () => {
       adjustPrincipal(BILLING_CONSTANTS.INITIAL_DEBT);
       updateMinimumPayment(BILLING_CONSTANTS.INITIAL_MIN_PAYMENT);
       setIsResetModalOpen(false);
-      alert('All data has been reset successfully.');
-      window.location.reload();
+      setIsSuccessModalOpen(true);
     } catch (error) {
       console.error('Error resetting data:', error);
       alert('Failed to reset data. Please try again.');
       setIsResetModalOpen(false);
     }
+  };
+
+  const handleSuccessModalClose = () => {
+    setIsSuccessModalOpen(false);
+    window.location.reload();
   };
 
   if (loading) {
@@ -250,6 +256,14 @@ export const Dashboard = () => {
         isOpen={isResetModalOpen}
         onClose={() => setIsResetModalOpen(false)}
         onConfirm={handleResetConfirm}
+      />
+
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={isSuccessModalOpen}
+        title="Success!"
+        message="All data has been reset successfully."
+        onClose={handleSuccessModalClose}
       />
     </div>
   );
