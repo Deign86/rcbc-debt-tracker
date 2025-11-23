@@ -21,7 +21,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 
-const logoPath = path.join(__dirname, '../public/assets/logo-transparent-fixed.png');
+const logoPath = path.join(__dirname, '../public/assets/logo-final.png');
 
 const files = [
     {
