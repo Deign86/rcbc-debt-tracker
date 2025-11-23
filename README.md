@@ -13,53 +13,73 @@ Featuring a **Match Aesthetic** design language with a sophisticated **Sage Gree
 
 ### 📊 Debt Dashboard
 - **Real-time Debt Tracking**: Display current debt balance with large, readable typography
+- **Motivational Dashboard**: Progress milestones (25%, 50%, 75%, 100%) with celebration animations
+- **Interest Savings Tracker**: See how much interest you've saved by paying more than the minimum
+- **Debt-Free Projection**: Estimated payoff date based on payment history
 - **Minimum Payment Calculator**: Automatic calculation of required minimum payments (5% of balance or ₱500)
 - **Payment Logging**: Easy-to-use numeric pad optimized input for recording payments
 - **Interest vs Principal Split**: See exactly how much of your payment goes to interest vs principal reduction
-- **Recent Activity Feed**: Track your payment history with detailed breakdowns
+- **Recent Activity Feed**: Real-time payment history with Firestore subscriptions
 
 ### 📈 Payment Simulator
 - **Repayment Timeline**: Calculate how long it will take to pay off your debt
 - **Total Interest Projection**: See the total interest you'll pay over the life of the debt
 - **Month-by-Month Schedule**: Detailed payment schedule showing balance reduction over time
 - **Quick Amount Presets**: Test different payment scenarios with one tap
+- **Average Daily Balance (ADB) Calculations**: RCBC-accurate interest projections
 
 ### 📋 Payment History
-- Full transaction history (Coming Soon)
-- Charts and analytics (Coming Soon)
+- Real-time payment tracking with Firestore subscriptions
+- Payment type indicators (payment vs adjustment)
+- Detailed interest and principal breakdowns
+- Recent activity feed (last 10 transactions)
 
 ### ✏️ Manual Adjustments
 - Bottom-sheet drawer for easy debt principal adjustments
+- Custom minimum payment settings
 - Add notes for corrections or lump-sum payments
+- One-click reset functionality with confirmation modal
 
 ## 🧮 RCBC Credit Card Interest Calculation
 
-This app uses the **RCBC-specific finance charge formula**:
+This app uses the **RCBC-specific Average Daily Balance (ADB) method**:
 - **Monthly Interest Rate**: 3.5% (42% APR) - typical for Philippine credit cards
+- **Daily Interest Rate**: 0.035 / 30 = 0.001166667
 - **Minimum Payment**: 5% of outstanding balance or ₱500, whichever is higher
-- **Interest Method**: Average Daily Balance (simplified monthly calculation for tracking)
+- **Interest Method**: Average Daily Balance with daily compounding
+- **Billing Cycle**: 30 days (starts 22nd, due 17th)
 
 ### Formula
-```
-Monthly Interest = Principal × 3.5%
+```typescript
+Interest = Average Daily Balance × Daily Rate × Days in Cycle
 Principal Payment = Total Payment - Interest
 New Balance = Principal - Principal Payment
 ```
 
+Implemented in `src/utils/adbInterestCalculation.ts` with full support for:
+- Payment split calculations (interest-first allocation)
+- Multi-month payment projections
+- Daily balance tracking
+- Accurate RCBC billing cycle dates
+
 ## 🚀 Technology Stack
 
-- **Frontend**: React 18 + TypeScript
+- **Frontend**: React 19 + TypeScript
 - **Build Tool**: Vite 7.2.4 (Fast, modern bundler with HMR)
-- **Styling**: Tailwind CSS v4 + Custom Design System
-- **Routing**: React Router DOM
+- **Styling**: Tailwind CSS v3.4 + Custom Match Aesthetic Design System
+- **Routing**: React Router DOM v7
+- **UI Components**: shadcn/ui + Radix UI primitives
 - **Backend**: 
-  - Firebase Authentication (secure user sessions)
-  - Cloud Firestore (real-time data sync)
+  - Cloud Firestore (real-time data sync with IndexedDB persistence)
   - Firebase Storage (logo and asset hosting)
   - Firebase Data Connect (GraphQL API)
-- **Deployment**: Vercel with environment variable encryption
-- **PWA**: Progressive Web App with offline support
-- **State Management**: React Context API (ThemeContext)
+- **Performance**: 
+  - 3-Layer Caching (IndexedDB + LocalStorage + Service Worker)
+  - Code splitting with manual chunks
+  - Workbox runtime caching strategies
+- **PWA**: vite-plugin-pwa with offline support and auto-updates
+- **State Management**: React Context API (ThemeContext, AuthContext)
+- **Deployment**: Vercel with encrypted environment variables
 
 ## 📱 Mobile-First Design
 
@@ -161,33 +181,52 @@ vercel --prod
 
 ```
 rcbc-debt-tracker/
+├── .github/
+│   └── copilot-instructions.md  # AI coding agent instructions
 ├── src/
 │   ├── components/              # React components
-│   │   ├── Layout.tsx           # Main layout with bottom nav
+│   │   ├── Layout.tsx           # Desktop sidebar + mobile bottom nav
 │   │   ├── DebtCard.tsx         # Debt display card
 │   │   ├── PaymentForm.tsx      # Payment input form
+│   │   ├── MotivationalDashboard.tsx # Progress milestones
+│   │   ├── CelebrationAnimation.tsx  # Milestone celebrations
 │   │   ├── EditDebtSheet.tsx    # Bottom sheet for debt editing
 │   │   ├── EditMinPaymentSheet.tsx # Min payment editor
 │   │   ├── ResetModal.tsx       # Reset confirmation modal
-│   │   └── SuccessModal.tsx     # Payment success feedback
+│   │   ├── SuccessModal.tsx     # Payment success feedback
+│   │   ├── WelcomeAnimation.tsx # First-time user experience
+│   │   └── ui/                  # shadcn/ui components
+│   │       ├── button.tsx
+│   │       ├── card.tsx
+│   │       ├── sheet.tsx
+│   │       └── ...
 │   ├── pages/                   # Route pages
-│   │   ├── Dashboard.tsx        # Main dashboard with logo
-│   │   ├── Simulator.tsx        # Payment simulator
-│   │   └── History.tsx          # Payment history
+│   │   ├── Dashboard.tsx        # Main dashboard with motivational stats
+│   │   ├── Simulator.tsx        # Payment simulator with ADB calculations
+│   │   ├── History.tsx          # Payment history (placeholder)
+│   │   └── Preferences.tsx      # Theme toggle and settings
 │   ├── hooks/                   # Custom React hooks
-│   │   └── useDebtCalculator.ts # RCBC calculation logic
+│   │   └── useDebtCalculator.ts # RCBC ADB calculation logic
 │   ├── contexts/                # React Context providers
-│   │   └── ThemeContext.tsx     # Theme management (light/dark)
-│   ├── services/                # Firebase services
-│   │   ├── firestoreService.ts  # Firestore operations
+│   │   ├── ThemeContext.tsx     # Theme management (light/dark)
+│   │   └── AuthContext.tsx      # Auth context (single-user mode)
+│   ├── services/                # Firebase & caching services
+│   │   ├── firestoreService.ts  # Firestore CRUD with cache-first strategy
+│   │   ├── cacheService.ts      # LocalStorage caching layer (5min/10min TTL)
 │   │   └── initializeFirestore.ts # Firestore initialization
+│   ├── utils/                   # Utility functions
+│   │   ├── adbInterestCalculation.ts # **Core ADB calculation logic**
+│   │   ├── currency.ts          # Currency formatting
+│   │   └── debtMotivation.ts    # Milestone tracking
 │   ├── types/                   # TypeScript definitions
-│   │   └── debt.ts              # Debt-related interfaces
+│   │   └── debt.ts              # Debt, Payment, Milestone interfaces
 │   ├── config/                  # Configuration
-│   │   ├── firebase.ts          # Firebase initialization (env vars)
-│   │   └── billingConstants.ts  # RCBC billing config
+│   │   ├── firebase.ts          # Firebase init with IndexedDB persistence
+│   │   └── billingConstants.ts  # RCBC billing cycle constants
+│   ├── lib/
+│   │   └── utils.ts             # Tailwind merge utility (cn)
 │   ├── dataconnect-generated/   # Firebase Data Connect SDK
-│   └── App.tsx                  # Main app component
+│   └── App.tsx                  # Main app with routing
 ├── dataconnect/                 # GraphQL schema & queries
 │   ├── dataconnect.yaml
 │   ├── schema/schema.gql
@@ -199,11 +238,14 @@ rcbc-debt-tracker/
 ├── public/
 │   ├── manifest.json            # PWA manifest
 │   └── assets/
-│       └── logo-final.png       # Transparent logo source
 ├── .env.example                 # Environment template
 ├── .gitignore                   # Git ignore (includes .env files)
+├── components.json              # shadcn/ui configuration
 ├── firebase.json                # Firebase config
+├── firestore.rules              # Firestore security rules
 ├── storage.rules                # Firebase Storage security rules
+├── tailwind.config.js           # Custom Match Aesthetic theme
+├── vite.config.ts               # Vite + PWA + code splitting config
 └── package.json
 ```
 
@@ -228,22 +270,32 @@ rcbc-debt-tracker/
 ## 📊 Roadmap
 
 ### ✅ Completed
-- [x] Dark mode with theme toggle
-- [x] Firebase Authentication integration
-- [x] Cloud Firestore for data persistence
+- [x] Dark mode with theme toggle and smooth transitions
+- [x] Cloud Firestore for data persistence with real-time subscriptions
 - [x] Firebase Storage for logo and assets
 - [x] Custom transparent logo with Match aesthetic
 - [x] Environment variable security implementation
 - [x] Git history cleaned of sensitive data
 - [x] Vercel deployment with encrypted secrets
 - [x] Firebase Data Connect GraphQL API setup
-- [x] Mobile-first responsive design
-- [x] RCBC-specific interest calculations
+- [x] Mobile-first responsive design with desktop sidebar
+- [x] **RCBC-specific ADB interest calculations** (core feature)
+- [x] **3-layer caching strategy** (IndexedDB + LocalStorage + Service Worker)
+- [x] **Motivational dashboard** with milestone tracking
+- [x] **Celebration animations** for payment milestones
+- [x] **Payment simulator** with accurate projections
+- [x] **PWA with offline support** via vite-plugin-pwa
+- [x] **Real-time activity feed** with Firestore subscriptions
+- [x] **Manual debt adjustments** with notes
+- [x] **Custom minimum payment settings**
+- [x] **One-click reset functionality**
+- [x] **shadcn/ui component library integration**
+- [x] **Welcome animation** for first-time users
+- [x] **AI coding agent instructions** in `.github/copilot-instructions.md`
 
 ### 🚧 In Progress
-- [ ] Payment history visualizations and charts
-- [ ] Export payment history (PDF, CSV)
-- [ ] Offline support with service worker
+- [ ] Payment history page with full transaction list
+- [ ] Charts and analytics visualizations
 
 ### 📅 Planned Features
 - [ ] Multiple credit card support
