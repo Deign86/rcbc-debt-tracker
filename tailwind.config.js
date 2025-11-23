@@ -7,6 +7,23 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        // Apple-inspired comprehensive breakpoint system
+        'xs': '320px',        // Small phones (iPhone SE)
+        'xxs': '375px',       // Standard phones (iPhone 12/13 mini)
+        'sm': '390px',        // iPhone 12/13/14 Pro
+        'sm-plus': '428px',   // iPhone Pro Max
+        'md-sm': '734px',     // Small tablets portrait
+        'md': '768px',        // iPad portrait
+        'md-plus': '834px',   // iPad Pro 11" portrait
+        'lg': '1024px',       // iPad landscape / Small desktop
+        'lg-plus': '1068px',  // iPad Pro 11" landscape
+        'xl': '1194px',       // Standard desktop
+        'xl-plus': '1280px',  // Large desktop
+        '2xl': '1440px',      // XL desktop
+        '3xl': '1920px',      // Full HD
+        '4xl': '2560px',      // 4K displays
+      },
       colors: {
         // Matcha color palette
         matcha: {

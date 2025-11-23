@@ -26,46 +26,46 @@ export const MotivationalDashboard = ({
   const nextMilestone = milestones.find(m => !m.reached);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 xxs:space-y-4">
       {/* Motivational Message */}
       <div className={`
         ${isDark ? 'bg-gradient-to-r from-blue-900/50 to-purple-900/50' : 'bg-gradient-to-r from-blue-50 to-purple-50'}
-        rounded-xl p-6 text-center border
+        rounded-lg xxs:rounded-xl p-4 xxs:p-5 sm:p-6 text-center border
         ${isDark ? 'border-blue-800' : 'border-blue-200'}
       `}>
-        <p className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+        <p className={`text-base xxs:text-lg sm:text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
           {motivationalMessage}
         </p>
       </div>
 
       {/* Main Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md-plus:grid-cols-3 gap-3 xxs:gap-4">
         {/* Time Saved vs Minimum Payments */}
         <div className={`
           ${isDark ? 'bg-gray-800' : 'bg-white'}
-          rounded-xl p-6 shadow-lg border
+          rounded-lg xxs:rounded-xl p-4 xxs:p-5 sm:p-6 shadow-lg border
           ${isDark ? 'border-gray-700' : 'border-gray-200'}
         `}>
           <div className="text-center">
-            <div className="text-4xl mb-2">⚡</div>
-            <h3 className={`text-sm font-semibold mb-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            <div className="text-3xl xxs:text-4xl mb-1.5 xxs:mb-2">⚡</div>
+            <h3 className={`text-xs xxs:text-sm font-semibold mb-1.5 xxs:mb-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               Time Saved vs Minimum
             </h3>
             {debtFreeProjection.monthsSavedVsMinimum > 0 ? (
               <>
-                <p className={`text-2xl font-bold text-green-500`}>
+                <p className={`text-xl xxs:text-2xl font-bold text-green-500`}>
                   {debtFreeProjection.monthsSavedVsMinimum} months
                 </p>
-                <p className={`text-sm mt-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                <p className={`text-xs xxs:text-sm mt-1.5 xxs:mt-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                   {(debtFreeProjection.monthsSavedVsMinimum / 12).toFixed(1)} years faster! 🚀
                 </p>
               </>
             ) : (
               <>
-                <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                <p className={`text-xl xxs:text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                   Start saving!
                 </p>
-                <p className={`text-sm mt-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                <p className={`text-xs xxs:text-sm mt-1.5 xxs:mt-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                   Pay more to save time
                 </p>
               </>
@@ -76,18 +76,18 @@ export const MotivationalDashboard = ({
         {/* Interest Savings */}
         <div className={`
           ${isDark ? 'bg-gray-800' : 'bg-white'}
-          rounded-xl p-6 shadow-lg border
+          rounded-lg xxs:rounded-xl p-4 xxs:p-5 sm:p-6 shadow-lg border
           ${isDark ? 'border-gray-700' : 'border-gray-200'}
         `}>
           <div className="text-center">
-            <div className="text-4xl mb-2">💰</div>
-            <h3 className={`text-sm font-semibold mb-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            <div className="text-3xl xxs:text-4xl mb-1.5 xxs:mb-2">💰</div>
+            <h3 className={`text-xs xxs:text-sm font-semibold mb-1.5 xxs:mb-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               Interest Saved vs Minimum
             </h3>
-            <p className={`text-2xl font-bold text-green-500`}>
+            <p className={`text-xl xxs:text-2xl font-bold text-green-500`}>
               ₱{interestSavings.totalInterestSavedVsMinimum.toLocaleString()}
             </p>
-            <p className={`text-sm mt-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`text-xs xxs:text-sm mt-1.5 xxs:mt-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               {interestSavings.savingsPercentage.toFixed(1)}% savings
             </p>
           </div>
@@ -96,18 +96,19 @@ export const MotivationalDashboard = ({
         {/* Next Payment Due */}
         <div className={`
           ${isDark ? 'bg-gray-800' : 'bg-white'}
-          rounded-xl p-6 shadow-lg border
+          rounded-lg xxs:rounded-xl p-4 xxs:p-5 sm:p-6 shadow-lg border
           ${isDark ? 'border-gray-700' : 'border-gray-200'}
+          sm:col-span-2 md-plus:col-span-1
         `}>
           <div className="text-center">
-            <div className="text-4xl mb-2">⏰</div>
-            <h3 className={`text-sm font-semibold mb-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            <div className="text-3xl xxs:text-4xl mb-1.5 xxs:mb-2">⏰</div>
+            <h3 className={`text-xs xxs:text-sm font-semibold mb-1.5 xxs:mb-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               Next Payment Due
             </h3>
-            <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            <p className={`text-xl xxs:text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
               {debtFreeProjection.daysUntilNextPayment} days
             </p>
-            <p className={`text-sm mt-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`text-xs xxs:text-sm mt-1.5 xxs:mt-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               {format(debtFreeProjection.nextPaymentDue, 'MMM d, yyyy')}
             </p>
           </div>
@@ -117,21 +118,21 @@ export const MotivationalDashboard = ({
       {/* Progress Bar with Milestones */}
       <div className={`
         ${isDark ? 'bg-gray-800' : 'bg-white'}
-        rounded-xl p-6 shadow-lg border
+        rounded-lg xxs:rounded-xl p-4 xxs:p-5 sm:p-6 shadow-lg border
         ${isDark ? 'border-gray-700' : 'border-gray-200'}
       `}>
-        <h3 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+        <h3 className={`text-base xxs:text-lg font-semibold mb-3 xxs:mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
           Debt Repayment Progress
         </h3>
         
         {/* Progress Bar */}
-        <div className="relative h-8 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mb-6">
+        <div className="relative h-6 xxs:h-7 sm:h-8 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mb-4 xxs:mb-5 sm:mb-6">
           <div
-            className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-500 ease-out flex items-center justify-end pr-2"
+            className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-500 ease-out flex items-center justify-end pr-1.5 xxs:pr-2"
             style={{ width: `${Math.min(progressPercentage, 100)}%` }}
           >
             {progressPercentage > 5 && (
-              <span className="text-white text-sm font-bold">
+              <span className="text-white text-xs xxs:text-sm font-bold">
                 {progressPercentage.toFixed(1)}%
               </span>
             )}
@@ -153,12 +154,12 @@ export const MotivationalDashboard = ({
         </div>
 
         {/* Milestone Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 xxs:gap-3">
           {milestones.map((milestone) => (
             <div
               key={milestone.percentage}
               className={`
-                p-3 rounded-lg border-2 transition-all
+                p-2 xxs:p-3 rounded-lg border-2 transition-all
                 ${milestone.reached
                   ? isDark
                     ? 'bg-green-900/30 border-green-500'
@@ -170,14 +171,14 @@ export const MotivationalDashboard = ({
               `}
             >
               <div className="text-center">
-                <div className="text-2xl mb-1">
+                <div className="text-xl xxs:text-2xl mb-0.5 xxs:mb-1">
                   {milestone.reached ? '✅' : '⭕'}
                 </div>
-                <p className={`text-xs font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                <p className={`text-[10px] xxs:text-xs font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                   {milestone.label}
                 </p>
                 {!milestone.reached && (
-                  <p className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <p className={`text-[9px] xxs:text-xs mt-0.5 xxs:mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                     ₱{milestone.remainingAmount.toLocaleString()} to go
                   </p>
                 )}
@@ -189,12 +190,12 @@ export const MotivationalDashboard = ({
         {/* Next Milestone Info */}
         {nextMilestone && (
           <div className={`
-            mt-4 p-4 rounded-lg
+            mt-3 xxs:mt-4 p-3 xxs:p-4 rounded-lg
             ${isDark ? 'bg-blue-900/30' : 'bg-blue-50'}
             border
             ${isDark ? 'border-blue-800' : 'border-blue-200'}
           `}>
-            <p className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
+            <p className={`text-xs xxs:text-sm ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
               <span className="font-semibold">Next Milestone:</span> {nextMilestone.label} - 
               Only ₱{nextMilestone.remainingAmount.toLocaleString()} away!
             </p>

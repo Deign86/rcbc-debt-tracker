@@ -116,8 +116,7 @@ export function calculateMidCycleInterest(
   initialBalance: number,
   paymentAmount: number,
   paymentDay: number,
-  cycleStartDay: number = BILLING_CONSTANTS.BILLING_CYCLE_START_DAY,
-  _cycleEndDay?: number
+  cycleStartDay: number = BILLING_CONSTANTS.BILLING_CYCLE_START_DAY
 ): InterestCalculationResult {
   // Days before payment
   let daysBeforePayment: number;
