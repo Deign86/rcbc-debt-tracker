@@ -7,27 +7,41 @@ const { initializeApp } = require('firebase/app');
 const { getStorage, ref, uploadBytes, getDownloadURL } = require('firebase/storage');
 const { getAuth, signInAnonymously } = require('firebase/auth');
 
+require('dotenv').config();
+
 const firebaseConfig = {
-    apiKey: "AIzaSyC6uIidtROxzOmkcdIaLhOUuvAua-8u24I",
-    authDomain: "rcbc-debt-tracker-app.firebaseapp.com",
-    projectId: "rcbc-debt-tracker-app",
-    storageBucket: "rcbc-debt-tracker-app.firebasestorage.app",
-    messagingSenderId: "1032519145646",
-    appId: "1:1032519145646:web:0377a94b9799cbd550b53f"
+    apiKey: process.env.VITE_FIREBASE_API_KEY,
+    authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.VITE_FIREBASE_APP_ID
 };
 
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 
+const logoPath = path.join(__dirname, '../public/assets/logo-transparent-fixed.png');
+
 const files = [
     {
-        src: "C:/Users/Deign/.gemini/antigravity/brain/5656b8cb-b281-4974-b22d-e3b1b36027d1/uploaded_image_0_1763895934799.png",
-        dest: "logo-circle.png",
+        src: logoPath,
+        dest: "assets/logo.png",
         contentType: "image/png"
     },
     {
-        src: "C:/Users/Deign/.gemini/antigravity/brain/5656b8cb-b281-4974-b22d-e3b1b36027d1/uploaded_image_1_1763895934799.png",
-        dest: "logo-transparent.png",
+        src: logoPath,
+        dest: "assets/favicon.png",
+        contentType: "image/png"
+    },
+    {
+        src: logoPath,
+        dest: "assets/icon-192.png",
+        contentType: "image/png"
+    },
+    {
+        src: logoPath,
+        dest: "assets/icon-512.png",
         contentType: "image/png"
     }
 ];

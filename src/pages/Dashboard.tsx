@@ -154,7 +154,7 @@ export const Dashboard = () => {
       <div className="bg-matcha-500 dark:bg-matcha-800 shadow-sm sticky top-0 z-10">
         <div className="px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Debt Repayment Logo" className="w-10 h-10 object-contain" />
+            <img src="https://firebasestorage.googleapis.com/v0/b/rcbc-debt-tracker-app.firebasestorage.app/o/assets%2Flogo.png?alt=media&token=022eece5-5080-4237-8c79-b77fe421612c" alt="Debt Repayment Logo" className="w-10 h-10 object-contain" />
             <div>
               <h1 className="text-2xl font-bold text-white dark:text-cream-50">Debt Tracker</h1>
               <p className="text-sm text-white/80 dark:text-cream-100/80">Financial Freedom Journey</p>

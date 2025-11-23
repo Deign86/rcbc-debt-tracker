@@ -7,11 +7,13 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "upload-logo": "node scripts/upload-logos.cjs"
   },
   "dependencies": {
     "@dataconnect/generated": "file:src/dataconnect-generated",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.2.3",
     "firebase": "^12.6.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
