@@ -1,21 +1,18 @@
 import { useState, useCallback } from 'react';
 import type { PaymentCalculation, DebtState } from '../types/debt';
+import { calculateSimpleADBInterest, calculatePaymentSplit } from '../utils/adbInterestCalculation';
+import { BILLING_CONSTANTS } from '../config/billingConstants';
 
 /**
  * RCBC Credit Card Interest Calculation Hook
  * 
- * RCBC uses Average Daily Balance method:
- * - Finance Charge = (Average Daily Balance × Interest Rate × Days in Billing Period) / 365
- * - Interest Rate: 3.5% monthly (42% APR) - typical for Philippine credit cards
+ * Uses proper RCBC Average Daily Balance (ADB) method:
+ * - Interest = Average Daily Balance × Daily Interest Rate × Days in Billing Cycle
+ * - Daily Interest Rate = Monthly Rate / 30 = 0.035 / 30 = 0.001166667
+ * - Billing Cycle: 30 days (starts on 22nd, ends on 21st)
+ * - Interest Rate: 3.5% monthly (42% APR)
  * - Minimum Payment: 5% of outstanding balance or ₱500, whichever is higher
- * 
- * For simplicity in this tracker, we'll use a monthly interest calculation:
- * Monthly Interest = Principal × Monthly Rate
  */
-
-const RCBC_MONTHLY_RATE = 0.035; // 3.5% per month (42% APR)
-const MINIMUM_PAYMENT_RATE = 0.05; // 5% of balance
-const MINIMUM_PAYMENT_FLOOR = 500; // Minimum ₱500
 
 export const useDebtCalculator = (initialDebt: DebtState) => {
   const [debtState, setDebtState] = useState<DebtState>(initialDebt);
@@ -23,44 +20,33 @@ export const useDebtCalculator = (initialDebt: DebtState) => {
 
   /**
    * Calculate how a payment will be split between interest and principal
+   * Uses proper RCBC Average Daily Balance method
    */
   const calculatePayment = useCallback((paymentAmount: number): PaymentCalculation => {
     const { currentPrincipal } = debtState;
     
-    // Calculate monthly interest on current principal
-    const interestCharge = currentPrincipal * RCBC_MONTHLY_RATE;
-    
-    // Determine how much goes to principal
-    let principalPayment = 0;
-    let interestPayment = 0;
-    
-    if (paymentAmount <= interestCharge) {
-      // Payment doesn't cover full interest
-      interestPayment = paymentAmount;
-      principalPayment = 0;
-    } else {
-      // Payment covers interest and some principal
-      interestPayment = interestCharge;
-      principalPayment = paymentAmount - interestCharge;
-    }
-    
-    const remainingBalance = Math.max(0, currentPrincipal - principalPayment);
+    // Calculate interest using ADB method (assumes full billing cycle)
+    const split = calculatePaymentSplit(
+      currentPrincipal,
+      paymentAmount,
+      BILLING_CONSTANTS.BILLING_CYCLE_DAYS
+    );
     
     // Calculate next minimum payment (5% of remaining or ₱500, or custom if set)
     let nextMinimumPayment: number;
-    if (customMinPayment !== null && remainingBalance > 0) {
+    if (customMinPayment !== null && split.remainingBalance > 0) {
       nextMinimumPayment = customMinPayment;
     } else {
       nextMinimumPayment = Math.max(
-        remainingBalance * MINIMUM_PAYMENT_RATE,
-        remainingBalance > 0 ? MINIMUM_PAYMENT_FLOOR : 0
+        split.remainingBalance * BILLING_CONSTANTS.MINIMUM_PAYMENT_RATE,
+        split.remainingBalance > 0 ? BILLING_CONSTANTS.MINIMUM_PAYMENT_FLOOR : 0
       );
     }
     
     return {
-      interest: Math.round(interestPayment * 100) / 100,
-      principal: Math.round(principalPayment * 100) / 100,
-      remainingBalance: Math.round(remainingBalance * 100) / 100,
+      interest: split.interest,
+      principal: split.principal,
+      remainingBalance: split.remainingBalance,
       nextMinimumPayment: Math.round(nextMinimumPayment * 100) / 100,
     };
   }, [debtState, customMinPayment]);
@@ -89,8 +75,8 @@ export const useDebtCalculator = (initialDebt: DebtState) => {
       nextMinimumPayment = customMinPayment;
     } else {
       nextMinimumPayment = Math.max(
-        newPrincipal * MINIMUM_PAYMENT_RATE,
-        newPrincipal > 0 ? MINIMUM_PAYMENT_FLOOR : 0
+        newPrincipal * BILLING_CONSTANTS.MINIMUM_PAYMENT_RATE,
+        newPrincipal > 0 ? BILLING_CONSTANTS.MINIMUM_PAYMENT_FLOOR : 0
       );
     }
     
@@ -113,7 +99,7 @@ export const useDebtCalculator = (initialDebt: DebtState) => {
   }, []);
 
   /**
-   * Simulate payment schedule
+   * Simulate payment schedule using ADB method
    */
   const simulatePayments = useCallback((monthlyPayment: number, months: number = 60) => {
     const schedule: Array<{
@@ -127,7 +113,8 @@ export const useDebtCalculator = (initialDebt: DebtState) => {
     let balance = debtState.currentPrincipal;
     
     for (let month = 1; month <= months && balance > 0; month++) {
-      const interestCharge = balance * RCBC_MONTHLY_RATE;
+      // Calculate interest using ADB method for full billing cycle
+      const interestCharge = calculateSimpleADBInterest(balance);
       const principalPayment = Math.max(0, monthlyPayment - interestCharge);
       const actualPayment = Math.min(monthlyPayment, balance + interestCharge);
       
@@ -154,7 +141,8 @@ export const useDebtCalculator = (initialDebt: DebtState) => {
     adjustPrincipal,
     updateMinimumPayment,
     simulatePayments,
-    monthlyRate: RCBC_MONTHLY_RATE,
-    annualRate: RCBC_MONTHLY_RATE * 12,
+    monthlyRate: BILLING_CONSTANTS.MONTHLY_INTEREST_RATE,
+    dailyRate: BILLING_CONSTANTS.DAILY_INTEREST_RATE,
+    annualRate: BILLING_CONSTANTS.MONTHLY_INTEREST_RATE * 12,
   };
 };

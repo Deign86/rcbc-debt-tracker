@@ -4,7 +4,12 @@
  * RCBC Credit Card Billing Cycle:
  * - Billing cycle starts on the 22nd of every month
  * - Payment due date is the 17th of every month
- * - Monthly interest rate: 3.5%
+ * - Monthly interest rate: 3.5% (configurable per card)
+ * - Uses Average Daily Balance (ADB) method with daily compounding
+ * 
+ * Interest Formula:
+ * Interest = (Average Daily Balance) × (Daily Interest Rate) × (Days in Billing Cycle)
+ * Where: Daily Interest Rate = Monthly Rate / 30
  */
 
 export const BILLING_CONSTANTS = {
@@ -14,14 +19,24 @@ export const BILLING_CONSTANTS = {
   // Payment due date (day of month when payment is due)
   DUE_DATE_DAY: 17,
   
-  // Monthly interest rate (3.5%)
+  // Monthly interest rate (3.5% - adjust based on your card's actual rate)
   MONTHLY_INTEREST_RATE: 0.035,
+  
+  // Daily interest rate (Monthly Rate / 30 days)
+  DAILY_INTEREST_RATE: 0.035 / 30, // 0.001166667
+  
+  // Standard billing cycle length in days
+  BILLING_CYCLE_DAYS: 30,
   
   // Initial debt amount
   INITIAL_DEBT: 50249.75,
   
   // Initial minimum payment
   INITIAL_MIN_PAYMENT: 1508.00,
+  
+  // Minimum payment calculation
+  MINIMUM_PAYMENT_RATE: 0.05, // 5% of balance
+  MINIMUM_PAYMENT_FLOOR: 500, // Minimum ₱500
 } as const;
 
 /**
