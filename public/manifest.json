@@ -1,12 +1,15 @@
 {
-  "name": "Debt Repayment Program",
+  "name": "RCBC Debt Tracker",
   "short_name": "Debt Tracker",
-  "description": "Track and manage your debt repayment with a calming matcha aesthetic",
+  "description": "Track and manage your RCBC credit card debt repayment with offline support",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#f4f8f3",
   "theme_color": "#5a9660",
   "orientation": "portrait",
+  "categories": ["finance", "productivity"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/logo-new.webp",
@@ -20,5 +23,23 @@
       "type": "image/webp",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Home",
+      "description": "View your debt overview",
+      "url": "/",
+      "icons": []
+    }
+  ],
+  "share_target": {
+    "action": "/",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded"
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
 }

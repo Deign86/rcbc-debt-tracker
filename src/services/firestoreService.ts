@@ -16,6 +16,8 @@ import {
 import { db } from '../config/firebase';
 import type { DebtState, Payment, MilestoneAchievement } from '../types/debt';
 import { CacheService, CACHE_KEYS } from './cacheService';
+import { offlineSyncService } from './offlineSyncService';
+import { offlineStorage, STORES } from './offlineStorageService';
 
 // Collection names
 const DEBT_STATE_COLLECTION = 'debtState';
@@ -31,9 +33,24 @@ const PAYMENT_HISTORY_CACHE_TTL = 1000 * 60 * 10;
 
 /**
  * Save the current debt state to Firestore
+ * Queues for offline sync if network is unavailable
  */
 export const saveDebtState = async (debtState: DebtState): Promise<void> => {
   try {
+    // Always save to offline storage first for immediate UI update
+    await offlineStorage.save(STORES.DEBT_STATE, { id: DEBT_STATE_DOC_ID, ...debtState });
+    
+    // Update cache for immediate access
+    CacheService.set(CACHE_KEYS.DEBT_STATE, debtState, DEBT_STATE_CACHE_TTL);
+    
+    // Check if online before attempting Firestore save
+    if (!offlineSyncService.getOnlineStatus()) {
+      console.log('Offline: Queuing debt state save for later sync');
+      await offlineSyncService.queueOperation('save_debt', debtState);
+      return;
+    }
+    
+    // Online: Save to Firestore
     const docRef = doc(db, DEBT_STATE_COLLECTION, DEBT_STATE_DOC_ID);
     await setDoc(docRef, {
       currentPrincipal: debtState.currentPrincipal,
@@ -43,18 +60,19 @@ export const saveDebtState = async (debtState: DebtState): Promise<void> => {
       dueDate: Timestamp.fromDate(debtState.dueDate),
       updatedAt: Timestamp.now(),
     });
-    
-    // Update cache after successful save
-    CacheService.set(CACHE_KEYS.DEBT_STATE, debtState, DEBT_STATE_CACHE_TTL);
   } catch (error) {
     console.error('Error saving debt state:', error);
+    // If online save fails, queue for later
+    if (offlineSyncService.getOnlineStatus()) {
+      await offlineSyncService.queueOperation('save_debt', debtState);
+    }
     throw error;
   }
 };
 
 /**
  * Load the current debt state from Firestore
- * Uses cache-first strategy for faster initial loads
+ * Uses cache-first strategy with offline storage fallback
  */
 export const loadDebtState = async (): Promise<DebtState | null> => {
   try {
@@ -69,13 +87,49 @@ export const loadDebtState = async (): Promise<DebtState | null> => {
         cached.dueDate = new Date(cached.dueDate);
       }
       
-      // Return cached data immediately, fetch fresh data in background
-      fetchAndCacheDebtState().catch(console.error);
+      // Return cached data immediately, fetch fresh data in background if online
+      if (offlineSyncService.getOnlineStatus()) {
+        fetchAndCacheDebtState().catch(console.error);
+      }
       return cached;
     }
     
-    // No cache, fetch from Firestore
-    return await fetchAndCacheDebtState();
+    // Try offline storage next
+    const offlineData = await offlineStorage.get<DebtState & { id: string }>(
+      STORES.DEBT_STATE, 
+      DEBT_STATE_DOC_ID
+    );
+    
+    if (offlineData) {
+      const debtState: DebtState = {
+        currentPrincipal: offlineData.currentPrincipal,
+        interestRate: offlineData.interestRate,
+        minimumPayment: offlineData.minimumPayment,
+        statementDate: typeof offlineData.statementDate === 'string' 
+          ? new Date(offlineData.statementDate) 
+          : offlineData.statementDate,
+        dueDate: typeof offlineData.dueDate === 'string' 
+          ? new Date(offlineData.dueDate) 
+          : offlineData.dueDate,
+      };
+      
+      // Cache it
+      CacheService.set(CACHE_KEYS.DEBT_STATE, debtState, DEBT_STATE_CACHE_TTL);
+      
+      // Fetch fresh if online
+      if (offlineSyncService.getOnlineStatus()) {
+        fetchAndCacheDebtState().catch(console.error);
+      }
+      
+      return debtState;
+    }
+    
+    // Finally, try Firestore if online
+    if (offlineSyncService.getOnlineStatus()) {
+      return await fetchAndCacheDebtState();
+    }
+    
+    return null;
   } catch (error) {
     console.error('Error loading debt state:', error);
     throw error;
@@ -135,6 +189,7 @@ export const subscribeToDebtState = (
 
 /**
  * Save a payment to Firestore
+ * Queues for offline sync if network is unavailable
  */
 export const savePayment = async (payment: Omit<Payment, 'id'>): Promise<string> => {
   try {
@@ -146,6 +201,34 @@ export const savePayment = async (payment: Omit<Payment, 'id'>): Promise<string>
       throw new Error('Invalid payment date');
     }
     
+    // Generate temp ID for offline storage
+    const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Save to offline storage immediately
+    await offlineStorage.save(STORES.PAYMENTS, {
+      id: tempId,
+      ...payment,
+    });
+    
+    // Invalidate payment history cache
+    try {
+      const keys = Object.keys(localStorage).filter(key => 
+        key.startsWith(CACHE_KEYS.PAYMENT_HISTORY)
+      );
+      keys.forEach(key => CacheService.remove(key));
+    } catch (cacheError) {
+      // Non-critical error, log and continue
+      console.warn('Error invalidating payment cache:', cacheError);
+    }
+    
+    // Check if online before attempting Firestore save
+    if (!offlineSyncService.getOnlineStatus()) {
+      console.log('Offline: Queuing payment save for later sync');
+      await offlineSyncService.queueOperation('save_payment', payment);
+      return tempId;
+    }
+    
+    // Online: Save to Firestore
     const docRef = await addDoc(collection(db, PAYMENTS_COLLECTION), {
       amount: payment.amount,
       date: Timestamp.fromDate(payment.date),
@@ -156,20 +239,24 @@ export const savePayment = async (payment: Omit<Payment, 'id'>): Promise<string>
       createdAt: Timestamp.now(),
     });
     
-    // Invalidate payment history cache since new payment was added
-    try {
-      const keys = Object.keys(localStorage).filter(key => 
-        key.startsWith(CACHE_KEYS.PAYMENT_HISTORY)
-      );
-      keys.forEach(key => CacheService.remove(key));
-    } catch (cacheError) {
-      // Non-critical error, log and continue
-      console.warn('Failed to clear payment cache:', cacheError);
-    }
+    // Replace temp ID with real Firestore ID in offline storage
+    await offlineStorage.delete(STORES.PAYMENTS, tempId);
+    await offlineStorage.save(STORES.PAYMENTS, {
+      id: docRef.id,
+      ...payment,
+    });
     
     return docRef.id;
   } catch (error: any) {
     console.error('Error saving payment:', error);
+    // If online save fails, queue for later
+    if (offlineSyncService.getOnlineStatus()) {
+      await offlineSyncService.queueOperation('save_payment', payment);
+    }
+    
+    // Return temp ID even on error so UI can continue
+    // Generate temp ID if not already defined
+    const errorTempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     // Provide more specific error messages
     if (error?.code === 'permission-denied') {
@@ -179,6 +266,8 @@ export const savePayment = async (payment: Omit<Payment, 'id'>): Promise<string>
     } else if (error?.message) {
       throw new Error(error.message);
     }
+    
+    return errorTempId;
     
     throw new Error('Failed to save payment');
   }

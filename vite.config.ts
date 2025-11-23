@@ -17,42 +17,111 @@ export default defineConfig({
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       // Use the manifest.json file from public/ to avoid conflicts
       manifest: false,
+      devOptions: {
+        enabled: true, // Enable in dev mode for testing
+        type: 'module',
+      },
       workbox: {
+        // Offline fallback support
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api/, /^\/auth/],
+        
+        // Glob patterns for precaching
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2}'],
+        
         // Cache strategies
         runtimeCaching: [
+          // Firestore API - NetworkFirst with long cache
           {
             urlPattern: /^https:\/\/firestore\.googleapis\.com\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'firestore-cache',
               expiration: {
-                maxEntries: 10,
+                maxEntries: 50,
                 maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
               },
               cacheableResponse: {
                 statuses: [0, 200],
               },
+              networkTimeoutSeconds: 10, // Fallback to cache after 10s
             },
           },
+          // Firebase Storage - NetworkFirst
+          {
+            urlPattern: /^https:\/\/firebasestorage\.googleapis\.com\/.*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'firebase-storage-cache',
+              expiration: {
+                maxEntries: 30,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              },
+              networkTimeoutSeconds: 10,
+            },
+          },
+          // Firebase Auth - NetworkOnly (don't cache auth requests)
+          {
+            urlPattern: /^https:\/\/identitytoolkit\.googleapis\.com\/.*/i,
+            handler: 'NetworkOnly',
+          },
+          // Firebase general - NetworkFirst
           {
             urlPattern: /^https:\/\/.*\.firebaseapp\.com\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'firebase-cache',
               expiration: {
-                maxEntries: 10,
+                maxEntries: 20,
                 maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+              },
+              networkTimeoutSeconds: 10,
+            },
+          },
+          // Google Fonts - CacheFirst with long expiry
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
               },
             },
           },
           {
-            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-static-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+            },
+          },
+          // Images - CacheFirst with long expiry
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'images-cache',
               expiration: {
-                maxEntries: 50,
+                maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              },
+            },
+          },
+          // JS/CSS - StaleWhileRevalidate for app assets
+          {
+            urlPattern: /\.(?:js|css)$/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'static-resources',
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
               },
             },
           },

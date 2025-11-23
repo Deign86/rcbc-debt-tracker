@@ -10,6 +10,7 @@ import { Preferences } from './pages/Preferences';
 import { WelcomeAnimation } from './components/WelcomeAnimation';
 import { ResetModal } from './components/ResetModal';
 import { SuccessModal } from './components/SuccessModal';
+import { OfflineIndicator } from './components/OfflineIndicator';
 import { resetAllData } from './services/firestoreService';
 import { CacheService } from './services/cacheService';
 import { Button } from "@/components/ui/button";
@@ -65,6 +66,9 @@ function AppContent() {
           <Route path="/preferences" element={<Preferences />} />
         </Routes>
       </Layout>
+
+      {/* Offline status indicator */}
+      <OfflineIndicator />
 
       <ResetModal
         isOpen={isResetModalOpen}

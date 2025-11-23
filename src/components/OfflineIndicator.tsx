@@ -1,0 +1,108 @@
+/**
+ * Offline indicator component
+ * Shows connection status and sync information
+ */
+
+import { Wifi, WifiOff, RefreshCw, AlertCircle } from 'lucide-react';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+
+export const OfflineIndicator = () => {
+  const { isOnline, syncStatus, queueCount, sync } = useNetworkStatus();
+
+  if (isOnline && queueCount === 0 && syncStatus === 'idle') {
+    return null; // Don't show anything when everything is fine
+  }
+
+  return (
+    <div
+      className={cn(
+        'fixed bottom-4 left-4 right-4 z-50 rounded-lg shadow-lg border px-4 py-3 flex items-center justify-between',
+        'sm:left-auto sm:right-4 sm:max-w-md',
+        'transition-colors duration-200',
+        !isOnline && 'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-700',
+        isOnline && syncStatus === 'syncing' && 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-700',
+        isOnline && syncStatus === 'error' && 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-700'
+      )}
+    >
+      <div className="flex items-center gap-3 flex-1 min-w-0">
+        <div className="flex-shrink-0">
+          {!isOnline && (
+            <WifiOff className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+          )}
+          {isOnline && syncStatus === 'syncing' && (
+            <RefreshCw className="h-5 w-5 text-blue-600 dark:text-blue-400 animate-spin" />
+          )}
+          {isOnline && syncStatus === 'error' && (
+            <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+          )}
+          {isOnline && syncStatus === 'idle' && queueCount > 0 && (
+            <Wifi className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          )}
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          {!isOnline && (
+            <>
+              <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                Offline Mode
+              </p>
+              <p className="text-xs text-yellow-600 dark:text-yellow-400 truncate">
+                {queueCount > 0 
+                  ? `${queueCount} change${queueCount === 1 ? '' : 's'} pending sync`
+                  : 'Changes will sync when online'
+                }
+              </p>
+            </>
+          )}
+          
+          {isOnline && syncStatus === 'syncing' && (
+            <>
+              <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                Syncing...
+              </p>
+              <p className="text-xs text-blue-600 dark:text-blue-400 truncate">
+                {queueCount > 0 && `${queueCount} change${queueCount === 1 ? '' : 's'} remaining`}
+              </p>
+            </>
+          )}
+          
+          {isOnline && syncStatus === 'error' && (
+            <>
+              <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                Sync Error
+              </p>
+              <p className="text-xs text-red-600 dark:text-red-400 truncate">
+                Some changes failed to sync
+              </p>
+            </>
+          )}
+          
+          {isOnline && syncStatus === 'idle' && queueCount > 0 && (
+            <>
+              <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                Ready to sync
+              </p>
+              <p className="text-xs text-blue-600 dark:text-blue-400 truncate">
+                {queueCount} change{queueCount === 1 ? '' : 's'} pending
+              </p>
+            </>
+          )}
+        </div>
+      </div>
+
+      {isOnline && queueCount > 0 && syncStatus !== 'syncing' && (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={sync}
+          className="ml-2 flex-shrink-0"
+        >
+          <RefreshCw className="h-4 w-4" />
+          <span className="ml-1 hidden sm:inline">Sync</span>
+        </Button>
+      )}
+    </div>
+  );
+};
