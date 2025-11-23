@@ -14,11 +14,11 @@ export const DebtCard = ({
   onEditMinPayment
 }: DebtCardProps) => {
   return (
-    <div className="bg-cream-50 dark:bg-matcha-800 rounded-3xl p-6 shadow-lg text-matcha-800 dark:text-cream-50 mx-4 mt-6 border-2 border-matcha-200 dark:border-matcha-600">
+    <div className="bg-cream-50 dark:bg-matcha-800 rounded-3xl p-6 shadow-lg text-matcha-900 dark:text-cream-50 mx-4 mt-6 border-2 border-matcha-300 dark:border-matcha-600">
       <div className="flex justify-between items-start mb-6">
         <div>
-          <p className="text-sm opacity-90 font-medium">Credit Card Debt</p>
-          <p className="text-xs opacity-75 mt-1">Total Outstanding</p>
+          <p className="text-sm font-semibold">Credit Card Debt</p>
+          <p className="text-xs opacity-80 mt-1">Total Outstanding</p>
         </div>
         <button
           onClick={onEdit}
@@ -38,12 +38,12 @@ export const DebtCard = ({
         </div>
       </div>
 
-      <div className="flex justify-between items-center pt-4 border-t border-matcha-200 dark:border-matcha-600">
+      <div className="flex justify-between items-center pt-4 border-t border-matcha-300 dark:border-matcha-600">
         <button
           onClick={onEditMinPayment}
           className="flex flex-col hover:bg-matcha-100 dark:hover:bg-matcha-700 active:bg-matcha-200 dark:active:bg-matcha-600 rounded-lg p-2 -ml-2 transition-colors"
         >
-          <p className="text-xs opacity-75">Minimum Payment</p>
+          <p className="text-xs opacity-80">Minimum Payment</p>
           <p className="text-lg font-semibold flex items-center gap-1">
             ₱{minimumPayment.toLocaleString('en-PH', {
               minimumFractionDigits: 2,
@@ -53,7 +53,7 @@ export const DebtCard = ({
           </p>
         </button>
         <div className="text-right">
-          <p className="text-xs opacity-75">Monthly Interest</p>
+          <p className="text-xs opacity-80">Monthly Interest</p>
           <p className="text-lg font-semibold">{(interestRate * 100).toFixed(1)}%</p>
         </div>
       </div>
