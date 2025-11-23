@@ -14,12 +14,13 @@ import {
   deleteDoc
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import type { DebtState, Payment } from '../types/debt';
+import type { DebtState, Payment, MilestoneAchievement } from '../types/debt';
 import { CacheService, CACHE_KEYS } from './cacheService';
 
 // Collection names
 const DEBT_STATE_COLLECTION = 'debtState';
 const PAYMENTS_COLLECTION = 'payments';
+const MILESTONES_COLLECTION = 'milestones';
 
 // Document ID for the single debt state (since there's no auth, we use a fixed ID)
 const DEBT_STATE_DOC_ID = 'current';
@@ -294,6 +295,14 @@ export const resetAllData = async (): Promise<void> => {
       batch.delete(doc.ref);
     });
     
+    // Get all milestones and delete them
+    const milestonesQuery = query(collection(db, MILESTONES_COLLECTION));
+    const milestonesSnapshot = await getDocs(milestonesQuery);
+    
+    milestonesSnapshot.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+    
     // Commit all deletions
     await batch.commit();
     
@@ -301,6 +310,62 @@ export const resetAllData = async (): Promise<void> => {
     CacheService.clearAll();
   } catch (error) {
     console.error('Error resetting data:', error);
+    throw error;
+  }
+};
+
+/**
+ * Save a milestone achievement to Firestore
+ */
+export const saveMilestoneAchievement = async (milestone: Omit<MilestoneAchievement, 'celebrated'>): Promise<void> => {
+  try {
+    const docRef = doc(db, MILESTONES_COLLECTION, `milestone-${milestone.milestone}`);
+    await setDoc(docRef, {
+      milestone: milestone.milestone,
+      achievedDate: Timestamp.fromDate(milestone.achievedDate),
+      principalAtAchievement: milestone.principalAtAchievement,
+      celebrated: false,
+    });
+  } catch (error) {
+    console.error('Error saving milestone achievement:', error);
+    throw error;
+  }
+};
+
+/**
+ * Mark a milestone as celebrated
+ */
+export const markMilestoneCelebrated = async (milestone: number): Promise<void> => {
+  try {
+    const docRef = doc(db, MILESTONES_COLLECTION, `milestone-${milestone}`);
+    await setDoc(docRef, { celebrated: true }, { merge: true });
+  } catch (error) {
+    console.error('Error marking milestone as celebrated:', error);
+    throw error;
+  }
+};
+
+/**
+ * Load all milestone achievements from Firestore
+ */
+export const loadMilestoneAchievements = async (): Promise<MilestoneAchievement[]> => {
+  try {
+    const milestonesSnapshot = await getDocs(collection(db, MILESTONES_COLLECTION));
+    const milestones: MilestoneAchievement[] = [];
+    
+    milestonesSnapshot.forEach((doc) => {
+      const data = doc.data();
+      milestones.push({
+        milestone: data.milestone,
+        achievedDate: data.achievedDate.toDate(),
+        principalAtAchievement: data.principalAtAchievement,
+        celebrated: data.celebrated || false,
+      });
+    });
+    
+    return milestones;
+  } catch (error) {
+    console.error('Error loading milestone achievements:', error);
     throw error;
   }
 };

@@ -1,20 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { DebtCard } from '../components/DebtCard';
 import { PaymentForm } from '../components/PaymentForm';
 import { EditDebtSheet } from '../components/EditDebtSheet';
 import { EditMinPaymentSheet } from '../components/EditMinPaymentSheet';
 import { ResetModal } from '../components/ResetModal';
 import { SuccessModal } from '../components/SuccessModal';
+import { CelebrationAnimation } from '../components/CelebrationAnimation';
+import { MotivationalDashboard } from '../components/MotivationalDashboard';
 import { useDebtCalculator } from '../hooks/useDebtCalculator';
 import {
   saveDebtState,
   loadDebtState,
   savePayment,
   subscribeToPayments,
-  resetAllData
+  resetAllData,
+  saveMilestoneAchievement,
+  markMilestoneCelebrated,
+  loadMilestoneAchievements,
 } from '../services/firestoreService';
 import { BILLING_CONSTANTS, getNextDueDate } from '../config/billingConstants';
-import type { Payment } from '../types/debt';
+import {
+  calculateMilestones,
+  calculateInterestSavings,
+  projectDebtFreeDate,
+  getMotivationalMessage,
+  checkNewMilestone,
+} from '../utils/debtMotivation';
+import type { Payment, MilestoneAchievement } from '../types/debt';
 
 export const Dashboard = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -23,6 +35,9 @@ export const Dashboard = () => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [_achievedMilestones, setAchievedMilestones] = useState<MilestoneAchievement[]>([]);
+  const [celebrationMilestone, setCelebrationMilestone] = useState<number | null>(null);
+  const previousPrincipalRef = useRef<number>(BILLING_CONSTANTS.INITIAL_DEBT);
 
   const {
     debtState,
@@ -39,14 +54,27 @@ export const Dashboard = () => {
     dueDate: getNextDueDate(),
   });
 
-  // Load debt state and payments from Firestore on mount
+  // Load debt state, payments, and milestones from Firestore on mount
   useEffect(() => {
     const loadData = async () => {
       try {
-        const savedDebtState = await loadDebtState();
+        const [savedDebtState, milestones] = await Promise.all([
+          loadDebtState(),
+          loadMilestoneAchievements(),
+        ]);
+        
         if (savedDebtState) {
           adjustPrincipal(savedDebtState.currentPrincipal);
           updateMinimumPayment(savedDebtState.minimumPayment);
+          previousPrincipalRef.current = savedDebtState.currentPrincipal;
+        }
+        
+        setAchievedMilestones(milestones);
+        
+        // Check if there's an uncelebrated milestone
+        const uncelebrated = milestones.find(m => !m.celebrated);
+        if (uncelebrated) {
+          setCelebrationMilestone(uncelebrated.milestone);
         }
       } catch (error) {
         console.error('Error loading data:', error);
@@ -78,6 +106,8 @@ export const Dashboard = () => {
 
   const handlePaymentSubmit = async (amount: number, calculation: any) => {
     try {
+      const previousPrincipal = debtState.currentPrincipal;
+      
       const newPayment = {
         amount,
         date: new Date(),
@@ -88,6 +118,31 @@ export const Dashboard = () => {
 
       await savePayment(newPayment);
       applyPayment(amount);
+      
+      // Check if a new milestone was reached
+      const newMilestone = checkNewMilestone(
+        previousPrincipal,
+        calculation.remainingBalance,
+        BILLING_CONSTANTS.INITIAL_DEBT
+      );
+      
+      if (newMilestone?.reached) {
+        // Save the milestone achievement
+        await saveMilestoneAchievement({
+          milestone: newMilestone.milestone,
+          achievedDate: new Date(),
+          principalAtAchievement: calculation.remainingBalance,
+        });
+        
+        // Trigger celebration
+        setCelebrationMilestone(newMilestone.milestone);
+        
+        // Update achieved milestones list
+        const updatedMilestones = await loadMilestoneAchievements();
+        setAchievedMilestones(updatedMilestones);
+      }
+      
+      previousPrincipalRef.current = calculation.remainingBalance;
     } catch (error) {
       console.error('Error submitting payment:', error);
       alert('Failed to save payment. Please try again.');
@@ -148,8 +203,32 @@ export const Dashboard = () => {
     );
   }
 
+  // Calculate motivational data
+  const milestones = calculateMilestones(debtState.currentPrincipal, BILLING_CONSTANTS.INITIAL_DEBT);
+  const interestSavings = calculateInterestSavings(payments, debtState.currentPrincipal, BILLING_CONSTANTS.INITIAL_DEBT);
+  const debtFreeProjection = projectDebtFreeDate(payments, debtState.currentPrincipal, debtState.minimumPayment);
+  const progressPercentage = ((BILLING_CONSTANTS.INITIAL_DEBT - debtState.currentPrincipal) / BILLING_CONSTANTS.INITIAL_DEBT) * 100;
+  const motivationalMessage = getMotivationalMessage(progressPercentage);
+
+  const handleCelebrationComplete = async () => {
+    if (celebrationMilestone) {
+      await markMilestoneCelebrated(celebrationMilestone);
+      const updatedMilestones = await loadMilestoneAchievements();
+      setAchievedMilestones(updatedMilestones);
+    }
+    setCelebrationMilestone(null);
+  };
+
   return (
     <div className="pb-6">
+      {/* Celebration Animation */}
+      {celebrationMilestone && (
+        <CelebrationAnimation
+          milestone={celebrationMilestone}
+          onComplete={handleCelebrationComplete}
+        />
+      )}
+
       {/* Header */}
       <div className="bg-matcha-500 dark:bg-matcha-800 shadow-sm sticky top-0 z-10">
         <div className="px-4 py-4 flex items-center justify-between">
@@ -168,6 +247,18 @@ export const Dashboard = () => {
             Reset
           </button>
         </div>
+      </div>
+
+      {/* Motivational Dashboard */}
+      <div className="mx-4 mt-6">
+        <MotivationalDashboard
+          milestones={milestones}
+          interestSavings={interestSavings}
+          debtFreeProjection={debtFreeProjection}
+          currentPrincipal={debtState.currentPrincipal}
+          initialDebt={BILLING_CONSTANTS.INITIAL_DEBT}
+          motivationalMessage={motivationalMessage}
+        />
       </div>
 
       {/* Debt Card */}

@@ -16,6 +16,13 @@ export interface DebtState {
   dueDate: Date;
 }
 
+export interface MilestoneAchievement {
+  milestone: number; // 25, 50, 75, or 100
+  achievedDate: Date;
+  principalAtAchievement: number;
+  celebrated: boolean; // Has the user seen the celebration?
+}
+
 export interface PaymentCalculation {
   interest: number;
   principal: number;
