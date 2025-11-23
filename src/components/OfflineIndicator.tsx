@@ -18,9 +18,10 @@ export const OfflineIndicator = () => {
   return (
     <div
       className={cn(
-        'fixed bottom-4 left-4 right-4 z-50 rounded-lg shadow-lg border px-4 py-3 flex items-center justify-between',
-        'sm:left-auto sm:right-4 sm:max-w-md',
-        'transition-colors duration-200',
+        // Position above mobile nav (16px height + 8px gap) on mobile, regular bottom on desktop
+        'fixed bottom-20 left-4 right-4 z-40 rounded-lg shadow-lg border px-4 py-2.5 flex items-center justify-between',
+        'lg:bottom-4 lg:left-auto lg:right-4 lg:max-w-md lg:py-3',
+        'transition-all duration-200',
         !isOnline && 'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-700',
         isOnline && syncStatus === 'syncing' && 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-700',
         isOnline && syncStatus === 'error' && 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-700'
