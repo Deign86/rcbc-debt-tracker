@@ -3,6 +3,7 @@ import { useDebtCalculator } from '../hooks/useDebtCalculator';
 import { loadDebtState } from '../services/firestoreService';
 import { BILLING_CONSTANTS, getNextDueDate } from '../config/billingConstants';
 import { formatCurrencyInput, parseCurrencyInput } from '../utils/currency';
+import { showError } from '../utils/errorHandler';
 
 export const Simulator = () => {
   const [monthlyPayment, setMonthlyPayment] = useState('5000');
@@ -16,7 +17,7 @@ export const Simulator = () => {
         setCurrentPrincipal(savedState.currentPrincipal);
       }
     }).catch(error => {
-      console.error('Error loading debt state:', error);
+      showError(error, 'Failed to load debt state', { severity: 'warning' });
     });
   }, []);
 

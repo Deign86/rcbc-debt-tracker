@@ -14,6 +14,7 @@ import { resetAllData } from './services/firestoreService';
 import { CacheService } from './services/cacheService';
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
+import { showError } from './utils/errorHandler';
 
 function AppContent() {
   const location = useLocation();
@@ -32,9 +33,7 @@ function AppContent() {
       setIsResetModalOpen(false);
       setIsSuccessModalOpen(true);
     } catch (error) {
-      console.error('Error resetting data:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      alert(`Failed to reset data: ${errorMessage}. Please check your connection and try again.`);
+      showError(error, 'Failed to reset data');
       setIsResetModalOpen(false);
     }
   };

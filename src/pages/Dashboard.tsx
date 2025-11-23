@@ -8,6 +8,7 @@ import { CelebrationAnimation } from '../components/CelebrationAnimation';
 import { MotivationalDashboard } from '../components/MotivationalDashboard';
 import { useDebtCalculator } from '../hooks/useDebtCalculator';
 import { RotateCcw, CreditCard, Edit3 } from 'lucide-react';
+import { showError } from '../utils/errorHandler';
 import {
   saveDebtState,
   loadDebtState,
@@ -92,7 +93,7 @@ export const Dashboard = () => {
           setCelebrationMilestone(uncelebrated.milestone);
         }
       } catch (error) {
-        console.error('Error loading data:', error);
+        showError(error, 'Failed to load debt data');
       } finally {
         setLoading(false);
       }
@@ -114,7 +115,7 @@ export const Dashboard = () => {
   useEffect(() => {
     if (!loading) {
       saveDebtState(debtState).catch(error => {
-        console.error('Error saving debt state:', error);
+        showError(error, 'Failed to save debt state', { severity: 'warning' });
       });
     }
   }, [debtState, loading]);
@@ -122,14 +123,6 @@ export const Dashboard = () => {
   const handlePaymentSubmit = async (amount: number, calculation: any) => {
     try {
       const previousPrincipal = debtState.currentPrincipal;
-
-      // Log for debugging
-      console.log('Payment submission:', {
-        previousPrincipal,
-        newBalance: calculation.remainingBalance,
-        previousProgress: ((BILLING_CONSTANTS.INITIAL_DEBT - previousPrincipal) / BILLING_CONSTANTS.INITIAL_DEBT * 100).toFixed(2) + '%',
-        newProgress: ((BILLING_CONSTANTS.INITIAL_DEBT - calculation.remainingBalance) / BILLING_CONSTANTS.INITIAL_DEBT * 100).toFixed(2) + '%',
-      });
 
       const newPayment = {
         amount,
@@ -154,8 +147,6 @@ export const Dashboard = () => {
         const alreadyAchieved = achievedMilestones.some(m => m.milestone === newMilestone.milestone);
 
         if (!alreadyAchieved) {
-          console.log(`🎉 Milestone reached: ${newMilestone.milestone}%`);
-
           // Show celebration IMMEDIATELY (don't wait for save)
           setCelebrationMilestone(newMilestone.milestone);
 
@@ -165,14 +156,12 @@ export const Dashboard = () => {
             achievedDate: new Date(),
             principalAtAchievement: calculation.remainingBalance,
           }).then(() => {
-            console.log(`✅ Milestone ${newMilestone.milestone}% saved to Firestore`);
             // Update achieved milestones list after successful save
             return loadMilestoneAchievements();
           }).then((updatedMilestones) => {
             setAchievedMilestones(updatedMilestones);
-          }).catch((error) => {
-            console.error('Error saving milestone (non-critical):', error);
-            // Celebration already shown, so just log the error
+          }).catch(() => {
+            // Celebration already shown, error is non-critical
             // Add to local state even if save failed
             setAchievedMilestones(prev => [...prev, {
               milestone: newMilestone.milestone,
@@ -181,16 +170,12 @@ export const Dashboard = () => {
               celebrated: false,
             }]);
           });
-        } else {
-          console.log(`Milestone ${newMilestone.milestone}% already achieved, skipping celebration`);
         }
       }
 
       previousPrincipalRef.current = calculation.remainingBalance;
     } catch (error) {
-      console.error('Error submitting payment:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      alert(`Failed to save payment: ${errorMessage}. Please check your connection and try again.`);
+      showError(error, 'Failed to save payment');
     }
   };
 
@@ -208,9 +193,7 @@ export const Dashboard = () => {
       await savePayment(adjustment);
       adjustPrincipal(newAmount);
     } catch (error) {
-      console.error('Error adjusting debt:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      alert(`Failed to save adjustment: ${errorMessage}. Please check your connection and try again.`);
+      showError(error, 'Failed to save debt adjustment');
     }
   };
 
@@ -222,9 +205,7 @@ export const Dashboard = () => {
       // Reload the page to reset all state
       window.location.reload();
     } catch (error) {
-      console.error('Error resetting data:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      alert(`Failed to reset data: ${errorMessage}. Please check your connection and try again.`);
+      showError(error, 'Failed to reset data');
       setIsResetModalOpen(false);
     }
   };
@@ -369,10 +350,10 @@ export const Dashboard = () => {
             </div>
           ) : (
             <div className="hidden xl:block bg-matcha-50 dark:bg-matcha-900/50 rounded-xl border-2 border-dashed border-matcha-200 dark:border-matcha-700 p-8 text-center h-full flex flex-col items-center justify-center text-matcha-600 dark:text-matcha-400">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <p className="text-sm">No recent activity</p>
+              <p className="text-sm -mt-2">No recent activity</p>
             </div>
           )}
         </div>

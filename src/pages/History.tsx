@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { subscribeToPayments, deletePayment, loadDebtState } from '../services/firestoreService';
 import type { Payment } from '../types/debt';
 import { CreditCard, Edit3, BarChart3, Trash2, AlertTriangle } from 'lucide-react';
+import { showError } from '../utils/errorHandler';
 
 export const History = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -12,7 +13,7 @@ export const History = () => {
   // Load debt state when component mounts (for state persistence across tabs)
   useEffect(() => {
     loadDebtState().catch(error => {
-      console.error('Error loading debt state:', error);
+      showError(error, 'Failed to load debt state', { severity: 'warning' });
     });
   }, []);
 
@@ -49,8 +50,7 @@ export const History = () => {
       await deletePayment(confirmDeleteId);
       setConfirmDeleteId(null);
     } catch (error) {
-      console.error('Failed to delete payment:', error);
-      alert('Failed to delete payment. Please try again.');
+      showError(error, 'Failed to delete payment');
     } finally {
       setDeletingId(null);
     }
