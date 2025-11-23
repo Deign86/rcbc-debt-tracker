@@ -15,24 +15,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
-      manifest: {
-        name: 'RCBC Debt Tracker',
-        short_name: 'RCBC Debt',
-        description: 'Track your RCBC credit card debt and payments',
-        theme_color: '#2563eb',
-        icons: [
-          {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
-          }
-        ]
-      },
+      // Use the manifest.json file from public/ to avoid conflicts
+      manifest: false,
       workbox: {
         // Cache strategies
         runtimeCaching: [
@@ -100,12 +84,13 @@ export default defineConfig({
         assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
-    // Minification
+    // Minification - keep console.warn and console.error for debugging
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true,
+        drop_console: ['log'],
         drop_debugger: true,
+        pure_funcs: ['console.log'],
       },
     },
   },

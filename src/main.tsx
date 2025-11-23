@@ -2,6 +2,21 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+import { registerSW } from 'virtual:pwa-register'
+
+// Register service worker for PWA offline support
+if ('serviceWorker' in navigator) {
+  registerSW({
+    immediate: true,
+    onNeedRefresh() {
+      // Auto-update on new version available
+      console.log('New content available, refreshing...');
+    },
+    onOfflineReady() {
+      console.log('App ready to work offline');
+    },
+  });
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
