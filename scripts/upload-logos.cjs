@@ -21,28 +21,28 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 
-const logoPath = path.join(__dirname, '../public/assets/logo-final.png');
+const logoPath = path.join(__dirname, '../public/assets/logo-new.webp');
 
 const files = [
     {
         src: logoPath,
-        dest: "assets/logo.png",
-        contentType: "image/png"
+        dest: "assets/logo.webp",
+        contentType: "image/webp"
     },
     {
         src: logoPath,
-        dest: "assets/favicon.png",
-        contentType: "image/png"
+        dest: "assets/favicon.webp",
+        contentType: "image/webp"
     },
     {
         src: logoPath,
-        dest: "assets/icon-192.png",
-        contentType: "image/png"
+        dest: "assets/icon-192.webp",
+        contentType: "image/webp"
     },
     {
         src: logoPath,
-        dest: "assets/icon-512.png",
-        contentType: "image/png"
+        dest: "assets/icon-512.webp",
+        contentType: "image/webp"
     }
 ];
 
