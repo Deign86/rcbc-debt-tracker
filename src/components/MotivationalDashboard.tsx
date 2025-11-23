@@ -162,7 +162,7 @@ export const MotivationalDashboard = ({
             <div className="pt-2">
               <p className="text-sm text-matcha-600 dark:text-matcha-400 text-center">
                 Next milestone: <span className="font-semibold text-matcha-800 dark:text-cream-100">{nextMilestone.percentage}%</span>
-                {' '}(₱{((initialDebt - currentPrincipal) - (initialDebt * nextMilestone.percentage / 100)).toLocaleString()} to go)
+                {' '}(₱{nextMilestone.remainingAmount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} to go)
               </p>
             </div>
           )}
