@@ -1,3 +1,15 @@
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle, Trash2, RotateCcw, FileEdit } from "lucide-react";
+
 interface ResetModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -5,73 +17,62 @@ interface ResetModalProps {
 }
 
 export const ResetModal = ({ isOpen, onClose, onConfirm }: ResetModalProps) => {
-  if (!isOpen) return null;
-
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/60 dark:bg-black/80 z-50 transition-opacity"
-        onClick={onClose}
-      />
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-2xl">Reset All Data</DialogTitle>
+          <DialogDescription className="text-base">
+            Are you sure you want to reset all data?
+          </DialogDescription>
+        </DialogHeader>
 
-      {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="bg-cream-50 dark:bg-matcha-800 rounded-2xl shadow-2xl max-w-md w-full border-2 border-matcha-300 dark:border-matcha-600 animate-scale-in">
-          {/* Header */}
-          <div className="px-6 pt-6 pb-4 border-b border-matcha-200 dark:border-matcha-700">
-            <h2 className="text-2xl font-bold text-matcha-900 dark:text-cream-50">
-              Reset All Data
-            </h2>
-            <p className="text-sm text-matcha-700 dark:text-cream-200 mt-1 font-medium">
-              Are you sure you want to reset all data?
+        <div className="space-y-4 py-4">
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription className="font-semibold">
+              This action cannot be undone!
+            </AlertDescription>
+          </Alert>
+
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-muted-foreground">
+              This will permanently:
             </p>
-          </div>
-
-          {/* Content */}
-          <div className="px-6 py-5">
-            <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-xl p-4 mb-4">
-              <p className="text-sm font-semibold text-red-800 dark:text-red-300 mb-3">
-                ⚠️ This action cannot be undone!
-              </p>
-              <p className="text-sm text-red-700 dark:text-red-400 font-medium">
-                This will permanently:
-              </p>
-            </div>
-
-            <div className="space-y-3 mb-5">
-              <div className="flex items-start gap-3 text-matcha-800 dark:text-cream-100">
-                <span className="text-lg">🗑️</span>
-                <p className="text-sm font-medium pt-0.5">Delete all payment history</p>
+            <div className="space-y-3 pl-2">
+              <div className="flex items-center gap-3">
+                <Trash2 className="h-4 w-4 text-muted-foreground" />
+                <p className="text-sm">Delete all payment history</p>
               </div>
-              <div className="flex items-start gap-3 text-matcha-800 dark:text-cream-100">
-                <span className="text-lg">↩️</span>
-                <p className="text-sm font-medium pt-0.5">Reset debt to initial amount</p>
+              <div className="flex items-center gap-3">
+                <RotateCcw className="h-4 w-4 text-muted-foreground" />
+                <p className="text-sm">Reset debt to initial amount</p>
               </div>
-              <div className="flex items-start gap-3 text-matcha-800 dark:text-cream-100">
-                <span className="text-lg">✏️</span>
-                <p className="text-sm font-medium pt-0.5">Clear all adjustments</p>
+              <div className="flex items-center gap-3">
+                <FileEdit className="h-4 w-4 text-muted-foreground" />
+                <p className="text-sm">Clear all adjustments</p>
               </div>
             </div>
-          </div>
-
-          {/* Actions */}
-          <div className="px-6 pb-6 flex gap-3">
-            <button
-              onClick={onClose}
-              className="flex-1 py-3 px-4 border-2 border-matcha-400 dark:border-matcha-600 text-matcha-800 dark:text-cream-100 font-semibold rounded-xl hover:bg-matcha-50 dark:hover:bg-matcha-900 active:bg-matcha-100 dark:active:bg-matcha-700 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={onConfirm}
-              className="flex-1 py-3 px-4 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-semibold rounded-xl transition-colors shadow-md"
-            >
-              Reset All Data
-            </button>
           </div>
         </div>
-      </div>
-    </>
+
+        <DialogFooter className="gap-2 sm:gap-0">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="flex-1"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={onConfirm}
+            className="flex-1"
+          >
+            Reset All Data
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

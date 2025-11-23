@@ -206,7 +206,7 @@ export function getMotivationalMessage(progressPercentage: number): string {
   } else if (progressPercentage > 0) {
     return "🌱 Every payment counts! Keep building momentum!";
   }
-  return "💪 Start your debt-free journey today!";
+  return "Start your debt-free journey today!";
 }
 
 /**

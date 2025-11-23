@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import type { PaymentCalculation } from '../types/debt';
 import { formatCurrencyInput, parseCurrencyInput } from '../utils/currency';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 interface PaymentFormProps {
   onCalculate: (amount: number) => PaymentCalculation;
@@ -11,14 +17,10 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
   const [amount, setAmount] = useState('');
   const [calculation, setCalculation] = useState<PaymentCalculation | null>(null);
 
-  // ... inside component
-
   const handleAmountChange = (value: string) => {
-    // Format the input value
     const formatted = formatCurrencyInput(value);
     setAmount(formatted);
 
-    // Calculate preview if valid amount
     const numValue = parseCurrencyInput(formatted);
 
     if (!isNaN(numValue) && numValue > 0) {
@@ -41,85 +43,86 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
   const quickAmounts = [500, 1000, 2000, 5000];
 
   return (
-    <div className="bg-cream-50 dark:bg-matcha-800 rounded-2xl shadow-md p-6 mx-4 mt-6 border-2 border-matcha-300 dark:border-matcha-600">
-      <h2 className="text-lg font-bold text-matcha-900 dark:text-cream-50 mb-4">Log Payment</h2>
-
-      {/* Payment Input */}
-      <div className="mb-4">
-        <label className="block text-sm font-semibold text-matcha-900 dark:text-cream-50 mb-2">
-          Payment Amount
-        </label>
-        <div className="relative">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-matcha-500 dark:text-matcha-400 text-lg">
-            ₱
-          </span>
-          <input
-            type="text"
-            inputMode="decimal"
-            value={amount}
-            onChange={(e) => handleAmountChange(e.target.value)}
-            placeholder="0.00"
-            className="w-full pl-10 pr-4 py-4 text-2xl font-semibold border-2 border-matcha-300 dark:border-matcha-600 rounded-xl focus:border-matcha-500 dark:focus:border-matcha-400 focus:outline-none transition-colors bg-white dark:bg-matcha-900 text-matcha-900 dark:text-cream-50 placeholder-matcha-400 dark:placeholder-matcha-600"
-          />
-        </div>
-      </div>
-
-      {/* Quick Amount Buttons */}
-      <div className="grid grid-cols-4 gap-2 mb-6">
-        {quickAmounts.map((quickAmount) => (
-          <button
-            key={quickAmount}
-            onClick={() => handleAmountChange(quickAmount.toString())}
-            className="py-2 px-3 bg-matcha-100 dark:bg-matcha-700 hover:bg-matcha-200 dark:hover:bg-matcha-600 active:bg-matcha-300 dark:active:bg-matcha-500 rounded-lg text-sm font-semibold text-matcha-900 dark:text-cream-50 transition-colors"
-          >
-            ₱{quickAmount}
-          </button>
-        ))}
-      </div>
-
-      {/* Payment Preview */}
-      {calculation && (
-        <div className="bg-matcha-50 dark:bg-matcha-900 rounded-xl p-4 mb-4 space-y-2 border-2 border-matcha-300 dark:border-matcha-700">
-          <div className="flex justify-between text-sm">
-            <span className="text-matcha-800 dark:text-cream-200 font-medium">Interest Payment</span>
-            <span className="font-semibold text-red-600">
-              ₱{calculation.interest.toLocaleString('en-PH', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-              })}
+    <Card className="mx-4 mt-6 border-matcha-300 dark:border-matcha-600">
+      <CardHeader>
+        <CardTitle className="text-matcha-800 dark:text-cream-100">Log Payment</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="payment-amount" className="text-matcha-700 dark:text-matcha-200">Payment Amount</Label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-matcha-500 dark:text-matcha-400 text-lg">
+              ₱
             </span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-matcha-800 dark:text-cream-200 font-medium">Principal Payment</span>
-            <span className="font-semibold text-green-600">
-              ₱{calculation.principal.toLocaleString('en-PH', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-              })}
-            </span>
-          </div>
-          <div className="pt-2 border-t border-matcha-300 dark:border-matcha-700">
-            <div className="flex justify-between">
-              <span className="text-sm font-semibold text-matcha-900 dark:text-cream-50">New Balance</span>
-              <span className="text-lg font-bold text-matcha-900 dark:text-cream-50">
-                ₱{calculation.remainingBalance.toLocaleString('en-PH', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2
-                })}
-              </span>
-            </div>
+            <Input
+              id="payment-amount"
+              type="text"
+              inputMode="decimal"
+              value={amount}
+              onChange={(e) => handleAmountChange(e.target.value)}
+              placeholder="0.00"
+              className="pl-8 text-2xl font-semibold h-14 text-matcha-900 dark:text-cream-50"
+            />
           </div>
         </div>
-      )}
 
-      {/* Submit Button */}
-      <button
-        onClick={handleSubmit}
-        disabled={!calculation || !amount}
-        className="w-full py-4 bg-matcha-600 hover:bg-matcha-700 active:bg-matcha-800 disabled:bg-cream-400 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors shadow-md"
-      >
-        Record Payment
-      </button>
-    </div>
+        <div className="grid grid-cols-4 gap-2">
+          {quickAmounts.map((quickAmount) => (
+            <Button
+              key={quickAmount}
+              variant="secondary"
+              size="sm"
+              onClick={() => handleAmountChange(quickAmount.toString())}
+              className="bg-matcha-100 dark:bg-matcha-700 hover:bg-matcha-200 dark:hover:bg-matcha-600 text-matcha-800 dark:text-cream-100"
+            >
+              ₱{quickAmount}
+            </Button>
+          ))}
+        </div>
+
+        {calculation && (
+          <Card className="bg-matcha-50 dark:bg-matcha-900 border-matcha-300 dark:border-matcha-700">
+            <CardContent className="pt-4 space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-matcha-700 dark:text-matcha-200">Interest Payment</span>
+                <Badge variant="destructive" className="font-semibold">
+                  ₱{calculation.interest.toLocaleString('en-PH', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-matcha-700 dark:text-matcha-200">Principal Payment</span>
+                <Badge variant="default" className="bg-green-600 hover:bg-green-700 font-semibold">
+                  ₱{calculation.principal.toLocaleString('en-PH', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}
+                </Badge>
+              </div>
+              <Separator className="bg-matcha-300 dark:bg-matcha-700" />
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-semibold text-matcha-800 dark:text-cream-100">New Balance</span>
+                <span className="text-lg font-bold text-matcha-900 dark:text-cream-50">
+                  ₱{calculation.remainingBalance.toLocaleString('en-PH', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <Button
+          onClick={handleSubmit}
+          disabled={!calculation || !amount}
+          className="w-full h-12 text-base font-semibold bg-matcha-600 hover:bg-matcha-700 text-cream-50"
+        >
+          Record Payment
+        </Button>
+      </CardContent>
+    </Card>
   );
 };

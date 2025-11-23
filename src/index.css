@@ -32,6 +32,22 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* iOS Smooth Corner Rounding */
+.smooth-corners {
+  border-radius: var(--radius);
+  /* iOS uses a bezier curve for smooth corners */
+  mask-image: paint(smooth-corners);
+}
+
+@supports (border-radius: 1rem) {
+  .smooth-corners-sm { border-radius: 0.75rem; }
+  .smooth-corners-md { border-radius: 1rem; }
+  .smooth-corners-lg { border-radius: 1.25rem; }
+  .smooth-corners-xl { border-radius: 1.5rem; }
+  .smooth-corners-2xl { border-radius: 2rem; }
+  .smooth-corners-3xl { border-radius: 2.5rem; }
+}
+
 /* Modal animations */
 @keyframes scale-in {
   from {
@@ -46,4 +62,73 @@ body {
 
 .animate-scale-in {
   animation: scale-in 0.2s ease-out;
+}
+
+
+
+@layer base {
+  :root {
+    --background: 124 29% 96%; /* cream-50 */
+    --foreground: 126 26% 22%; /* matcha-800 */
+    --card: 60 20% 98%; /* cream-100 */
+    --card-foreground: 126 26% 22%; /* matcha-800 */
+    --popover: 60 20% 98%; /* cream-100 */
+    --popover-foreground: 126 26% 22%; /* matcha-800 */
+    --primary: 124 41% 42%; /* matcha-600 */
+    --primary-foreground: 60 20% 98%; /* cream-100 */
+    --secondary: 124 29% 86%; /* matcha-200 */
+    --secondary-foreground: 126 26% 22%; /* matcha-800 */
+    --muted: 124 29% 86%; /* matcha-200 */
+    --muted-foreground: 124 18% 33%; /* matcha-700 */
+    --accent: 124 21% 72%; /* matcha-300 */
+    --accent-foreground: 126 26% 22%; /* matcha-800 */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 60 20% 98%;
+    --border: 124 21% 72%; /* matcha-300 */
+    --input: 124 29% 86%; /* matcha-200 */
+    --ring: 124 41% 42%; /* matcha-600 */
+    --chart-1: 124 41% 48%;
+    --chart-2: 124 29% 38%;
+    --chart-3: 126 26% 22%;
+    --chart-4: 124 21% 72%;
+    --chart-5: 124 29% 86%;
+    --radius: 1.25rem; /* iOS-style smooth corners */
+  }
+  .dark {
+    --background: 126 26% 10%; /* matcha-900 */
+    --foreground: 60 20% 98%; /* cream-100 */
+    --card: 126 26% 22%; /* matcha-800 */
+    --card-foreground: 60 20% 98%; /* cream-100 */
+    --popover: 126 26% 22%; /* matcha-800 */
+    --popover-foreground: 60 20% 98%; /* cream-100 */
+    --primary: 124 41% 48%; /* matcha-500 */
+    --primary-foreground: 60 20% 98%; /* cream-100 */
+    --secondary: 124 18% 33%; /* matcha-700 */
+    --secondary-foreground: 60 20% 98%; /* cream-100 */
+    --muted: 124 18% 33%; /* matcha-700 */
+    --muted-foreground: 124 21% 72%; /* matcha-300 */
+    --accent: 124 18% 33%; /* matcha-700 */
+    --accent-foreground: 60 20% 98%; /* cream-100 */
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 60 20% 98%;
+    --border: 124 41% 42%; /* matcha-600 */
+    --input: 124 18% 33%; /* matcha-700 */
+    --ring: 124 41% 48%; /* matcha-500 */
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

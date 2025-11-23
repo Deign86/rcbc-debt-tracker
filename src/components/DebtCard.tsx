@@ -1,3 +1,9 @@
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Pencil } from "lucide-react";
+
 interface DebtCardProps {
   totalDebt: number;
   minimumPayment: number;
@@ -14,49 +20,58 @@ export const DebtCard = ({
   onEditMinPayment
 }: DebtCardProps) => {
   return (
-    <div className="bg-cream-50 dark:bg-matcha-800 rounded-3xl p-6 shadow-lg text-matcha-900 dark:text-cream-50 mx-4 mt-6 border-2 border-matcha-300 dark:border-matcha-600">
-      <div className="flex justify-between items-start mb-6">
-        <div>
-          <p className="text-sm font-semibold">Credit Card Debt</p>
-          <p className="text-xs opacity-80 mt-1">Total Outstanding</p>
+    <Card className="mx-4 mt-6 border-matcha-300 dark:border-matcha-600 bg-cream-100 dark:bg-matcha-800">
+      <CardHeader className="pb-4">
+        <div className="flex justify-between items-start">
+          <div className="space-y-1">
+            <CardTitle className="text-lg text-matcha-800 dark:text-cream-100">Credit Card Debt</CardTitle>
+            <CardDescription className="text-matcha-600 dark:text-matcha-300">Total Outstanding Balance</CardDescription>
+          </div>
+          <Button
+            onClick={onEdit}
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 hover:bg-matcha-200 dark:hover:bg-matcha-700 text-matcha-600 dark:text-matcha-300"
+            aria-label="Edit debt"
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
         </div>
-        <button
-          onClick={onEdit}
-          className="p-2 rounded-full hover:bg-matcha-100 dark:hover:bg-matcha-700 active:bg-matcha-200 dark:active:bg-matcha-600 transition-colors text-matcha-600 dark:text-matcha-300"
-          aria-label="Edit debt"
-        >
-          <span className="text-xl">✏️</span>
-        </button>
-      </div>
+      </CardHeader>
 
-      <div className="mb-6">
-        <div className="text-5xl font-bold tracking-tight">
+      <CardContent className="space-y-6">
+        <div className="text-5xl font-bold tracking-tight text-matcha-900 dark:text-cream-50">
           ₱{totalDebt.toLocaleString('en-PH', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
           })}
         </div>
-      </div>
 
-      <div className="flex justify-between items-center pt-4 border-t border-matcha-300 dark:border-matcha-600">
-        <button
-          onClick={onEditMinPayment}
-          className="flex flex-col hover:bg-matcha-100 dark:hover:bg-matcha-700 active:bg-matcha-200 dark:active:bg-matcha-600 rounded-lg p-2 -ml-2 transition-colors"
-        >
-          <p className="text-xs opacity-80">Minimum Payment</p>
-          <p className="text-lg font-semibold flex items-center gap-1">
-            ₱{minimumPayment.toLocaleString('en-PH', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2
-            })}
-            <span className="text-sm opacity-75">✏️</span>
-          </p>
-        </button>
-        <div className="text-right">
-          <p className="text-xs opacity-80">Monthly Interest</p>
-          <p className="text-lg font-semibold">{(interestRate * 100).toFixed(1)}%</p>
+        <Separator className="bg-matcha-300 dark:bg-matcha-600" />
+
+        <div className="flex justify-between items-center">
+          <Button
+            onClick={onEditMinPayment}
+            variant="ghost"
+            className="flex flex-col items-start h-auto p-2 -ml-2 hover:bg-matcha-200 dark:hover:bg-matcha-700"
+          >
+            <span className="text-xs text-matcha-600 dark:text-matcha-300">Minimum Payment</span>
+            <span className="text-lg font-semibold flex items-center gap-1 text-matcha-900 dark:text-cream-50">
+              ₱{minimumPayment.toLocaleString('en-PH', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })}
+              <Pencil className="h-3 w-3 opacity-75" />
+            </span>
+          </Button>
+          <div className="text-right">
+            <p className="text-xs text-matcha-600 dark:text-matcha-300">Monthly Interest</p>
+            <Badge variant="secondary" className="text-base font-semibold mt-1 bg-matcha-200 dark:bg-matcha-700 text-matcha-800 dark:text-cream-100">
+              {(interestRate * 100).toFixed(1)}%
+            </Badge>
+          </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };

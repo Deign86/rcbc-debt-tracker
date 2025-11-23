@@ -7,6 +7,7 @@ import { ResetModal } from '../components/ResetModal';
 import { CelebrationAnimation } from '../components/CelebrationAnimation';
 import { MotivationalDashboard } from '../components/MotivationalDashboard';
 import { useDebtCalculator } from '../hooks/useDebtCalculator';
+import { RotateCcw, CreditCard, Edit3 } from 'lucide-react';
 import {
   saveDebtState,
   loadDebtState,
@@ -278,10 +279,10 @@ export const Dashboard = () => {
           {/* Mobile Reset Button */}
           <button
             onClick={() => setIsResetModalOpen(true)}
-            className="lg:hidden px-2 xxs:px-3 py-1 xxs:py-1.5 text-xs xxs:text-sm bg-cream-100 dark:bg-matcha-900 text-matcha-800 dark:text-cream-200 rounded-lg hover:bg-cream-200 dark:hover:bg-matcha-700 transition-colors font-medium border border-matcha-300 dark:border-matcha-600"
+            className="lg:hidden px-2 xxs:px-3 py-1 xxs:py-1.5 text-xs xxs:text-sm bg-cream-100 dark:bg-matcha-900 text-matcha-800 dark:text-cream-200 rounded-lg hover:bg-cream-200 dark:hover:bg-matcha-700 transition-colors font-medium border border-matcha-300 dark:border-matcha-600 flex items-center gap-1"
             title="Reset all data"
           >
-            🔄 <span className="hidden xxs:inline">Reset</span>
+            <RotateCcw className="h-3 w-3 xxs:h-4 xxs:w-4" /> <span className="hidden xxs:inline">Reset</span>
           </button>
         </div>
       </div>
@@ -330,8 +331,8 @@ export const Dashboard = () => {
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="font-medium text-matcha-800 dark:text-cream-100">
-                          {payment.type === 'payment' ? '💳 Payment' : '✏️ Adjustment'}
+                        <p className="font-medium text-matcha-800 dark:text-cream-100 flex items-center gap-2">
+                          {payment.type === 'payment' ? <><CreditCard className="h-4 w-4" /> Payment</> : <><Edit3 className="h-4 w-4" /> Adjustment</>}
                         </p>
                         <p className="text-sm text-matcha-600 dark:text-cream-300 mt-1">
                           {payment.date.toLocaleDateString('en-PH', {
@@ -367,9 +368,11 @@ export const Dashboard = () => {
               </div>
             </div>
           ) : (
-            <div className="hidden xl:block bg-matcha-50 dark:bg-matcha-900/50 rounded-xl border-2 border-dashed border-matcha-200 dark:border-matcha-700 p-8 text-center h-full flex flex-col items-center justify-center text-matcha-400">
-              <span className="text-4xl mb-2">📝</span>
-              <p>No recent activity</p>
+            <div className="hidden xl:block bg-matcha-50 dark:bg-matcha-900/50 rounded-xl border-2 border-dashed border-matcha-200 dark:border-matcha-700 p-8 text-center h-full flex flex-col items-center justify-center text-matcha-600 dark:text-matcha-400">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <p className="text-sm">No recent activity</p>
             </div>
           )}
         </div>

@@ -12,7 +12,8 @@ import { ResetModal } from './components/ResetModal';
 import { SuccessModal } from './components/SuccessModal';
 import { resetAllData } from './services/firestoreService';
 import { CacheService } from './services/cacheService';
-import { BILLING_CONSTANTS } from './config/billingConstants';
+import { Button } from "@/components/ui/button";
+import { RotateCcw } from "lucide-react";
 
 function AppContent() {
   const location = useLocation();
@@ -44,14 +45,15 @@ function AppContent() {
   };
 
   const resetButton = isDashboard ? (
-    <button
+    <Button
       onClick={handleResetClick}
-      className="w-full px-3 lg-plus:px-4 py-2 lg-plus:py-2.5 text-xs lg-plus:text-sm bg-cream-100 dark:bg-matcha-900 text-matcha-800 dark:text-cream-200 rounded-lg hover:bg-cream-200 dark:hover:bg-matcha-700 transition-colors font-medium border border-matcha-300 dark:border-matcha-600 flex items-center justify-center gap-1.5 lg-plus:gap-2"
+      variant="outline"
+      className="w-full gap-2"
       title="Reset all data"
     >
-      <span className="text-base lg-plus:text-lg">🔄</span>
+      <RotateCcw className="h-4 w-4" />
       <span>Reset Data</span>
-    </button>
+    </Button>
   ) : null;
 
   return (
