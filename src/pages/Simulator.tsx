@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDebtCalculator } from '../hooks/useDebtCalculator';
 import { loadDebtState } from '../services/firestoreService';
 import { BILLING_CONSTANTS, getNextDueDate } from '../config/billingConstants';
+import { formatCurrencyInput, parseCurrencyInput } from '../utils/currency';
 
 export const Simulator = () => {
   const [monthlyPayment, setMonthlyPayment] = useState('5000');
@@ -27,21 +28,23 @@ export const Simulator = () => {
     dueDate: getNextDueDate(),
   });
 
+  // ... inside component
+
   const handleAmountChange = (value: string) => {
-    const sanitized = value.replace(/[^\d.]/g, '');
-    setMonthlyPayment(sanitized);
+    const formatted = formatCurrencyInput(value);
+    setMonthlyPayment(formatted);
     setShowSchedule(false);
   };
 
   const handleSimulate = () => {
-    const amount = parseFloat(monthlyPayment);
+    const amount = parseCurrencyInput(monthlyPayment);
     if (!isNaN(amount) && amount > 0) {
       setShowSchedule(true);
     }
   };
 
   const schedule = showSchedule
-    ? simulatePayments(parseFloat(monthlyPayment))
+    ? simulatePayments(parseCurrencyInput(monthlyPayment))
     : [];
 
   const totalInterest = schedule.reduce((sum, month) => sum + month.interest, 0);
@@ -100,7 +103,7 @@ export const Simulator = () => {
 
         <button
           onClick={handleSimulate}
-          disabled={!monthlyPayment || parseFloat(monthlyPayment) <= 0}
+          disabled={!monthlyPayment || parseCurrencyInput(monthlyPayment) <= 0}
           className="w-full py-4 bg-matcha-600 hover:bg-matcha-700 active:bg-matcha-800 disabled:bg-matcha-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors shadow-md"
         >
           Calculate Payoff Timeline

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { formatCurrencyInput, parseCurrencyInput } from '../utils/currency';
 
 interface EditDebtSheetProps {
   isOpen: boolean;
@@ -23,17 +24,15 @@ export const EditDebtSheet = ({
     }
   }, [isOpen, currentAmount]);
 
+  // ... inside component
+
   const handleAmountChange = (value: string) => {
-    const sanitized = value.replace(/[^\d.]/g, '');
-    const parts = sanitized.split('.');
-    const formatted = parts.length > 2
-      ? `${parts[0]}.${parts.slice(1).join('')}`
-      : sanitized;
+    const formatted = formatCurrencyInput(value);
     setAmount(formatted);
   };
 
   const handleSave = () => {
-    const numValue = parseFloat(amount);
+    const numValue = parseCurrencyInput(amount);
     if (!isNaN(numValue) && numValue >= 0) {
       onSave(numValue, note || 'Manual adjustment');
       onClose();

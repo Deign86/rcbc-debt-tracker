@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { PaymentCalculation } from '../types/debt';
+import { formatCurrencyInput, parseCurrencyInput } from '../utils/currency';
 
 interface PaymentFormProps {
   onCalculate: (amount: number) => PaymentCalculation;
@@ -10,20 +11,16 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
   const [amount, setAmount] = useState('');
   const [calculation, setCalculation] = useState<PaymentCalculation | null>(null);
 
+  // ... inside component
+
   const handleAmountChange = (value: string) => {
-    // Only allow numbers and decimal point
-    const sanitized = value.replace(/[^\d.]/g, '');
-
-    // Prevent multiple decimal points
-    const parts = sanitized.split('.');
-    const formatted = parts.length > 2
-      ? `${parts[0]}.${parts.slice(1).join('')}`
-      : sanitized;
-
+    // Format the input value
+    const formatted = formatCurrencyInput(value);
     setAmount(formatted);
 
     // Calculate preview if valid amount
-    const numValue = parseFloat(formatted);
+    const numValue = parseCurrencyInput(formatted);
+
     if (!isNaN(numValue) && numValue > 0) {
       const calc = onCalculate(numValue);
       setCalculation(calc);
@@ -33,7 +30,7 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
   };
 
   const handleSubmit = () => {
-    const numValue = parseFloat(amount);
+    const numValue = parseCurrencyInput(amount);
     if (!isNaN(numValue) && numValue > 0 && calculation) {
       onSubmit(numValue, calculation);
       setAmount('');
