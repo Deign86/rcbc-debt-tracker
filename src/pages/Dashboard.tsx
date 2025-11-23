@@ -36,7 +36,7 @@ export const Dashboard = () => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [_achievedMilestones, setAchievedMilestones] = useState<MilestoneAchievement[]>([]);
+  const [achievedMilestones, setAchievedMilestones] = useState<MilestoneAchievement[]>([]);
   const [celebrationMilestone, setCelebrationMilestone] = useState<number | null>(null);
   const previousPrincipalRef = useRef<number>(BILLING_CONSTANTS.INITIAL_DEBT);
 
@@ -109,6 +109,14 @@ export const Dashboard = () => {
     try {
       const previousPrincipal = debtState.currentPrincipal;
       
+      // Log for debugging
+      console.log('Payment submission:', {
+        previousPrincipal,
+        newBalance: calculation.remainingBalance,
+        previousProgress: ((BILLING_CONSTANTS.INITIAL_DEBT - previousPrincipal) / BILLING_CONSTANTS.INITIAL_DEBT * 100).toFixed(2) + '%',
+        newProgress: ((BILLING_CONSTANTS.INITIAL_DEBT - calculation.remainingBalance) / BILLING_CONSTANTS.INITIAL_DEBT * 100).toFixed(2) + '%',
+      });
+      
       const newPayment = {
         amount,
         date: new Date(),
@@ -128,23 +136,40 @@ export const Dashboard = () => {
       );
       
       if (newMilestone?.reached) {
-        // Save the milestone achievement in background (don't block payment)
-        saveMilestoneAchievement({
-          milestone: newMilestone.milestone,
-          achievedDate: new Date(),
-          principalAtAchievement: calculation.remainingBalance,
-        }).then(() => {
-          // Trigger celebration
+        // Check if this milestone was already achieved (avoid duplicates)
+        const alreadyAchieved = achievedMilestones.some(m => m.milestone === newMilestone.milestone);
+        
+        if (!alreadyAchieved) {
+          console.log(`🎉 Milestone reached: ${newMilestone.milestone}%`);
+          
+          // Show celebration IMMEDIATELY (don't wait for save)
           setCelebrationMilestone(newMilestone.milestone);
-          // Update achieved milestones list
-          return loadMilestoneAchievements();
-        }).then((updatedMilestones) => {
-          setAchievedMilestones(updatedMilestones);
-        }).catch((error) => {
-          console.error('Error saving milestone (non-critical):', error);
-          // Still show celebration even if save failed
-          setCelebrationMilestone(newMilestone.milestone);
-        });
+          
+          // Save the milestone achievement in background (non-blocking)
+          saveMilestoneAchievement({
+            milestone: newMilestone.milestone,
+            achievedDate: new Date(),
+            principalAtAchievement: calculation.remainingBalance,
+          }).then(() => {
+            console.log(`✅ Milestone ${newMilestone.milestone}% saved to Firestore`);
+            // Update achieved milestones list after successful save
+            return loadMilestoneAchievements();
+          }).then((updatedMilestones) => {
+            setAchievedMilestones(updatedMilestones);
+          }).catch((error) => {
+            console.error('Error saving milestone (non-critical):', error);
+            // Celebration already shown, so just log the error
+            // Add to local state even if save failed
+            setAchievedMilestones(prev => [...prev, {
+              milestone: newMilestone.milestone,
+              achievedDate: new Date(),
+              principalAtAchievement: calculation.remainingBalance,
+              celebrated: false,
+            }]);
+          });
+        } else {
+          console.log(`Milestone ${newMilestone.milestone}% already achieved, skipping celebration`);
+        }
       }
       
       previousPrincipalRef.current = calculation.remainingBalance;
