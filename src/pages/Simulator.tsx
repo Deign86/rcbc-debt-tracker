@@ -65,7 +65,7 @@ export const Simulator = () => {
               value={monthlyPayment}
               onChange={(e) => handleAmountChange(e.target.value)}
               placeholder="5000.00"
-              className="w-full pl-10 pr-4 py-4 text-2xl font-semibold border-2 border-matcha-200 dark:border-matcha-600/20 dark:bg-matcha-800 dark:text-cream-50 rounded-xl focus:border-matcha-500 dark:focus:border-matcha-500 focus:outline-none transition-colors"
+              className="w-full pl-10 pr-4 py-4 text-2xl font-semibold border-2 border-matcha-200 dark:border-matcha-600/20 bg-white dark:bg-matcha-800 text-matcha-900 dark:text-cream-50 placeholder-matcha-400 dark:placeholder-matcha-600 rounded-xl focus:border-matcha-500 dark:focus:border-matcha-500 focus:outline-none transition-colors"
             />
           </div>
         </div>
