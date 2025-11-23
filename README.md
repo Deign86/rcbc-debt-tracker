@@ -1,9 +1,13 @@
 # 💳 RCBC Debt Tracker
 
-A **mobile-first Progressive Web App (PWA)** for tracking and managing RCBC credit card debt repayment. Built with React, Vite, Firebase, and Tailwind CSS.
+A **mobile-first Progressive Web App (PWA)** for tracking and managing RCBC credit card debt repayment. Built with React, TypeScript, Firebase, and Tailwind CSS.
 
-### 🎨 Design
-Featuring a **Sage Green & Navy Blue** color palette inspired by the "Black Panther" aesthetic, ensuring a premium look in both light and dark modes.
+### 🎨 Design Philosophy
+Featuring a **Match Aesthetic** design language with a sophisticated **Sage Green & Navy Blue** color palette inspired by "Black Panther". The UI provides a premium, cohesive experience across light and dark modes with:
+- Custom transparent logo integrated via Firebase Storage
+- Smooth animations and micro-interactions
+- Modern glassmorphism effects
+- Consistent spacing and typography scale
 
 ## ✨ Features
 
@@ -45,12 +49,17 @@ New Balance = Principal - Principal Payment
 ## 🚀 Technology Stack
 
 - **Frontend**: React 18 + TypeScript
-- **Build Tool**: Vite 7.2.4 (Fast, modern bundler)
+- **Build Tool**: Vite 7.2.4 (Fast, modern bundler with HMR)
 - **Styling**: Tailwind CSS v4 + Custom Design System
 - **Routing**: React Router DOM
-- **Backend**: Firebase (Authentication + Firestore)
-- **Deployment**: Vercel
+- **Backend**: 
+  - Firebase Authentication (secure user sessions)
+  - Cloud Firestore (real-time data sync)
+  - Firebase Storage (logo and asset hosting)
+  - Firebase Data Connect (GraphQL API)
+- **Deployment**: Vercel with environment variable encryption
 - **PWA**: Progressive Web App with offline support
+- **State Management**: React Context API (ThemeContext)
 
 ## 📱 Mobile-First Design
 
@@ -81,12 +90,32 @@ cd rcbc-debt-tracker
 npm install
 ```
 
-3. **Configure Firebase**
-- Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
-- Enable Authentication and Firestore
-- Copy your Firebase config to `src/config/firebase.ts`
+3. **Configure Environment Variables**
+- Copy `.env.example` to `.env`
+```bash
+cp .env.example .env
+```
+- Fill in your Firebase credentials in `.env`:
+```env
+VITE_FIREBASE_API_KEY=your_api_key_here
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+```
 
-4. **Start development server**
+4. **Set up Firebase**
+- Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
+- Enable the following services:
+  - **Authentication** (Email/Password provider)
+  - **Cloud Firestore** (Database)
+  - **Firebase Storage** (For logos and assets)
+  - **Firebase Data Connect** (Optional, for GraphQL API)
+- Configure Storage Rules (set to test mode for development)
+- Copy your Firebase config values to `.env`
+
+5. **Start development server**
 ```bash
 npm run dev
 ```
@@ -99,57 +128,171 @@ npm run build
 ```
 
 ### Deploy to Vercel
+
+1. **Install Vercel CLI**
+```bash
+npm i -g vercel
+```
+
+2. **Link your project**
+```bash
+vercel link
+```
+
+3. **Add environment variables to Vercel**
+```bash
+# Add each Firebase config variable
+vercel env add VITE_FIREBASE_API_KEY production
+vercel env add VITE_FIREBASE_AUTH_DOMAIN production
+vercel env add VITE_FIREBASE_PROJECT_ID production
+vercel env add VITE_FIREBASE_STORAGE_BUCKET production
+vercel env add VITE_FIREBASE_MESSAGING_SENDER_ID production
+vercel env add VITE_FIREBASE_APP_ID production
+```
+
+4. **Deploy**
 ```bash
 vercel --prod
 ```
+
+**Security Note**: All sensitive Firebase credentials are stored as encrypted environment variables. Never commit `.env` files or expose API keys in your codebase.
 
 ## 📂 Project Structure
 
 ```
 rcbc-debt-tracker/
 ├── src/
-│   ├── components/          # React components
-│   │   ├── Layout.tsx       # Main layout with bottom nav
-│   │   ├── DebtCard.tsx     # Debt display card
-│   │   ├── PaymentForm.tsx  # Payment input form
-│   │   └── EditDebtSheet.tsx # Bottom sheet for editing
-│   ├── pages/               # Route pages
-│   │   ├── Dashboard.tsx    # Main dashboard
-│   │   ├── Simulator.tsx    # Payment simulator
-│   │   └── History.tsx      # Payment history
-│   ├── hooks/               # Custom React hooks
+│   ├── components/              # React components
+│   │   ├── Layout.tsx           # Main layout with bottom nav
+│   │   ├── DebtCard.tsx         # Debt display card
+│   │   ├── PaymentForm.tsx      # Payment input form
+│   │   ├── EditDebtSheet.tsx    # Bottom sheet for debt editing
+│   │   ├── EditMinPaymentSheet.tsx # Min payment editor
+│   │   ├── ResetModal.tsx       # Reset confirmation modal
+│   │   └── SuccessModal.tsx     # Payment success feedback
+│   ├── pages/                   # Route pages
+│   │   ├── Dashboard.tsx        # Main dashboard with logo
+│   │   ├── Simulator.tsx        # Payment simulator
+│   │   └── History.tsx          # Payment history
+│   ├── hooks/                   # Custom React hooks
 │   │   └── useDebtCalculator.ts # RCBC calculation logic
-│   ├── types/               # TypeScript types
-│   │   └── debt.ts          # Debt-related types
-│   ├── config/              # Configuration files
-│   │   └── firebase.ts      # Firebase config
-│   └── App.tsx              # Main app component
+│   ├── contexts/                # React Context providers
+│   │   └── ThemeContext.tsx     # Theme management (light/dark)
+│   ├── services/                # Firebase services
+│   │   ├── firestoreService.ts  # Firestore operations
+│   │   └── initializeFirestore.ts # Firestore initialization
+│   ├── types/                   # TypeScript definitions
+│   │   └── debt.ts              # Debt-related interfaces
+│   ├── config/                  # Configuration
+│   │   ├── firebase.ts          # Firebase initialization (env vars)
+│   │   └── billingConstants.ts  # RCBC billing config
+│   ├── dataconnect-generated/   # Firebase Data Connect SDK
+│   └── App.tsx                  # Main app component
+├── dataconnect/                 # GraphQL schema & queries
+│   ├── dataconnect.yaml
+│   ├── schema/schema.gql
+│   └── example/
+│       ├── queries.gql
+│       └── mutations.gql
+├── scripts/
+│   └── upload-logos.cjs         # Firebase Storage upload script
 ├── public/
-│   └── manifest.json        # PWA manifest
+│   ├── manifest.json            # PWA manifest
+│   └── assets/
+│       └── logo-final.png       # Transparent logo source
+├── .env.example                 # Environment template
+├── .gitignore                   # Git ignore (includes .env files)
+├── firebase.json                # Firebase config
+├── storage.rules                # Firebase Storage security rules
 └── package.json
 ```
 
 ## 🔐 Security & Privacy
 
-- No sensitive data stored without user consent
-- Firebase Authentication for secure user sessions
-- All financial calculations done client-side
-- HTTPS-only in production
+- **Environment Variables**: All Firebase credentials stored in `.env` files (gitignored)
+- **Zero Secrets in Code**: Complete removal of API keys from codebase and git history
+- **Vercel Encryption**: Production secrets encrypted in Vercel environment
+- **Firebase Authentication**: Secure user sessions with token-based auth
+- **Storage Security**: Firebase Storage rules configured for controlled access
+- **HTTPS-Only**: All production traffic over secure connections
+- **Client-Side Calculations**: Financial calculations performed locally
+- **No Data Sharing**: User financial data never shared with third parties
+
+### Security Measures Implemented:
+1. Migrated all secrets to environment variables with `VITE_` prefix
+2. Cleaned entire git history using `git-filter-repo` to remove exposed credentials
+3. Added `.env`, `.env.local`, `.env.production` to `.gitignore`
+4. Created `.env.example` template for secure onboarding
+5. Configured Vercel CLI for encrypted environment variable management
 
 ## 📊 Roadmap
 
-- [ ] Firebase Authentication integration
-- [ ] Cloud Firestore for payment history sync
-- [ ] Charts and visualizations
+### ✅ Completed
+- [x] Dark mode with theme toggle
+- [x] Firebase Authentication integration
+- [x] Cloud Firestore for data persistence
+- [x] Firebase Storage for logo and assets
+- [x] Custom transparent logo with Match aesthetic
+- [x] Environment variable security implementation
+- [x] Git history cleaned of sensitive data
+- [x] Vercel deployment with encrypted secrets
+- [x] Firebase Data Connect GraphQL API setup
+- [x] Mobile-first responsive design
+- [x] RCBC-specific interest calculations
+
+### 🚧 In Progress
+- [ ] Payment history visualizations and charts
 - [ ] Export payment history (PDF, CSV)
-- [ ] Multiple credit card support
-- [x] Dark mode
 - [ ] Offline support with service worker
+
+### 📅 Planned Features
+- [ ] Multiple credit card support
 - [ ] Push notifications for payment reminders
+- [ ] Budget forecasting and recommendations
+- [ ] Debt-free celebration animations
+- [ ] Payment streak tracking
+- [ ] Custom payment goals
+
+## 🎨 Design System
+
+### Color Palette
+- **Primary (Sage Green)**: 
+  - Light: `#9fafa3` 
+  - Dark: `#7a8a7e`
+- **Secondary (Navy Blue)**: 
+  - Light: `#2c3e50`
+  - Dark: `#1a252f`
+- **Accent**: Match-inspired complementary tones
+- **Surface**: Dynamic light/dark mode backgrounds
+
+### Typography
+- **Headings**: System font stack optimized for readability
+- **Body**: Inter, system-ui fallback
+- **Numeric**: Tabular figures for financial data
+
+### Components
+- **Cards**: Elevated surfaces with subtle shadows
+- **Buttons**: Consistent touch targets (minimum 44px height)
+- **Bottom Sheets**: Native-feeling drawer interactions
+- **Modals**: Centered overlays with backdrop blur
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please follow these guidelines:
+
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Never commit secrets** - Use environment variables
+4. **Follow the existing code style** - TypeScript + functional components
+5. **Test thoroughly** - Ensure mobile responsiveness
+6. **Submit a Pull Request**
+
+### Development Guidelines
+- Use TypeScript for type safety
+- Follow React best practices (hooks, functional components)
+- Maintain mobile-first responsive design
+- Keep Firebase security rules updated
+- Document new features in README
 
 ## 📄 License
 
