@@ -1,4 +1,5 @@
 import { BILLING_CONSTANTS } from '../config/billingConstants';
+import { calculateSimpleADBInterest } from './adbInterestCalculation';
 import type { Payment } from '../types/debt';
 
 export interface MilestoneData {
@@ -19,6 +20,7 @@ export interface InterestSavingsData {
 export interface DebtFreeProjection {
   projectedPayoffDate: Date;
   monthsRemaining: number;
+  monthsSavedVsMinimum: number;
   averageMonthlyPayment: number;
   projectedTotalInterest: number;
   daysUntilNextPayment: number;
@@ -53,6 +55,7 @@ export function calculateMilestones(
 
 /**
  * Calculate interest savings compared to minimum-only payments
+ * Uses proper RCBC Average Daily Balance method
  */
 export function calculateInterestSavings(
   payments: Payment[],
@@ -62,18 +65,18 @@ export function calculateInterestSavings(
   // Calculate actual interest paid from payment history
   const totalInterestPaid = payments.reduce((sum, payment) => sum + payment.interest, 0);
 
-  // Calculate what would have been paid if only minimum payments were made
+  // Calculate what would have been paid if only minimum payments were made (using ADB)
   const minimumPaymentAmount = BILLING_CONSTANTS.INITIAL_MIN_PAYMENT;
-  const monthlyRate = BILLING_CONSTANTS.MONTHLY_INTEREST_RATE;
   
   let projectedBalance = initialDebt;
   let projectedTotalInterest = 0;
   let monthCount = 0;
   const maxMonths = 600; // Safety limit (50 years)
 
-  // Simulate minimum-only payments
+  // Simulate minimum-only payments using ADB method
   while (projectedBalance > 0 && monthCount < maxMonths) {
-    const interestCharge = projectedBalance * monthlyRate;
+    // Calculate interest using ADB for full billing cycle
+    const interestCharge = calculateSimpleADBInterest(projectedBalance);
     const principalPayment = Math.max(0, minimumPaymentAmount - interestCharge);
     
     projectedTotalInterest += interestCharge;
@@ -81,7 +84,10 @@ export function calculateInterestSavings(
     monthCount++;
 
     // Recalculate minimum payment (5% of remaining balance or 500)
-    const newMinimum = Math.max(projectedBalance * 0.05, 500);
+    const newMinimum = Math.max(
+      projectedBalance * BILLING_CONSTANTS.MINIMUM_PAYMENT_RATE,
+      BILLING_CONSTANTS.MINIMUM_PAYMENT_FLOOR
+    );
     if (newMinimum < minimumPaymentAmount) {
       break;
     }
@@ -106,28 +112,28 @@ export function calculateInterestSavings(
 
 /**
  * Project debt-free date based on payment history
+ * Uses proper RCBC Average Daily Balance method
  */
 export function projectDebtFreeDate(
   payments: Payment[],
   currentPrincipal: number,
   minimumPayment: number
 ): DebtFreeProjection {
-  const monthlyRate = BILLING_CONSTANTS.MONTHLY_INTEREST_RATE;
-  
   // Calculate average monthly payment from recent history (last 3 months or all if less)
   const recentPayments = payments.slice(0, 3);
   const averageMonthlyPayment = recentPayments.length > 0
     ? recentPayments.reduce((sum, p) => sum + p.amount, 0) / recentPayments.length
     : minimumPayment;
 
-  // Project forward to payoff
+  // Project forward to payoff using ADB method
   let balance = currentPrincipal;
   let totalInterest = 0;
   let monthsRemaining = 0;
   const maxMonths = 600; // Safety limit
 
   while (balance > 0 && monthsRemaining < maxMonths) {
-    const interestCharge = balance * monthlyRate;
+    // Calculate interest using ADB for full billing cycle
+    const interestCharge = calculateSimpleADBInterest(balance);
     const principalPayment = Math.min(balance, Math.max(0, averageMonthlyPayment - interestCharge));
     
     totalInterest += interestCharge;
@@ -136,10 +142,25 @@ export function projectDebtFreeDate(
 
     // If payment doesn't cover interest, use minimum payment
     if (principalPayment <= 0) {
-      const minPrincipal = Math.min(balance, Math.max(0, minimumPayment - interestCharge));
+      const minInterest = calculateSimpleADBInterest(balance);
+      const minPrincipal = Math.min(balance, Math.max(0, minimumPayment - minInterest));
       balance -= minPrincipal;
     }
   }
+
+  // Calculate minimum-only payoff time for comparison
+  let minBalance = currentPrincipal;
+  let monthsIfMinimumOnly = 0;
+  const minPaymentAmount = Math.max(currentPrincipal * BILLING_CONSTANTS.MINIMUM_PAYMENT_RATE, BILLING_CONSTANTS.MINIMUM_PAYMENT_FLOOR);
+
+  while (minBalance > 0 && monthsIfMinimumOnly < maxMonths) {
+    const interestCharge = calculateSimpleADBInterest(minBalance);
+    const principalPayment = Math.max(0, minPaymentAmount - interestCharge);
+    minBalance -= principalPayment;
+    monthsIfMinimumOnly++;
+  }
+
+  const monthsSavedVsMinimum = Math.max(0, monthsIfMinimumOnly - monthsRemaining);
 
   // Calculate projected payoff date from next billing cycle
   const today = new Date();
@@ -162,6 +183,7 @@ export function projectDebtFreeDate(
   return {
     projectedPayoffDate,
     monthsRemaining,
+    monthsSavedVsMinimum,
     averageMonthlyPayment: Math.round(averageMonthlyPayment * 100) / 100,
     projectedTotalInterest: Math.round(totalInterest * 100) / 100,
     daysUntilNextPayment,

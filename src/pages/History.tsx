@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { subscribeToPayments, deletePayment } from '../services/firestoreService';
+import { subscribeToPayments, deletePayment, loadDebtState } from '../services/firestoreService';
 import type { Payment } from '../types/debt';
 
 export const History = () => {
@@ -7,6 +7,13 @@ export const History = () => {
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  // Load debt state when component mounts (for state persistence across tabs)
+  useEffect(() => {
+    loadDebtState().catch(error => {
+      console.error('Error loading debt state:', error);
+    });
+  }, []);
 
   useEffect(() => {
     const unsubscribe = subscribeToPayments(100, (updatedPayments) => {

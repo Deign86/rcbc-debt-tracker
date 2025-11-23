@@ -40,23 +40,36 @@ export const MotivationalDashboard = ({
 
       {/* Main Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Debt-Free Countdown */}
+        {/* Time Saved vs Minimum Payments */}
         <div className={`
           ${isDark ? 'bg-gray-800' : 'bg-white'}
           rounded-xl p-6 shadow-lg border
           ${isDark ? 'border-gray-700' : 'border-gray-200'}
         `}>
           <div className="text-center">
-            <div className="text-4xl mb-2">📅</div>
+            <div className="text-4xl mb-2">⚡</div>
             <h3 className={`text-sm font-semibold mb-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              Projected Debt-Free Date
+              Time Saved vs Minimum
             </h3>
-            <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              {format(debtFreeProjection.projectedPayoffDate, 'MMM d, yyyy')}
-            </p>
-            <p className={`text-sm mt-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              {debtFreeProjection.monthsRemaining} months remaining
-            </p>
+            {debtFreeProjection.monthsSavedVsMinimum > 0 ? (
+              <>
+                <p className={`text-2xl font-bold text-green-500`}>
+                  {debtFreeProjection.monthsSavedVsMinimum} months
+                </p>
+                <p className={`text-sm mt-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {(debtFreeProjection.monthsSavedVsMinimum / 12).toFixed(1)} years faster! 🚀
+                </p>
+              </>
+            ) : (
+              <>
+                <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  Start saving!
+                </p>
+                <p className={`text-sm mt-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Pay more to save time
+                </p>
+              </>
+            )}
           </div>
         </div>
 

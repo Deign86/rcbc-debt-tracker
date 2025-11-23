@@ -1,18 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDebtCalculator } from '../hooks/useDebtCalculator';
-
-const INITIAL_DEBT = 50249.75;
+import { loadDebtState } from '../services/firestoreService';
+import { BILLING_CONSTANTS, getNextDueDate } from '../config/billingConstants';
 
 export const Simulator = () => {
   const [monthlyPayment, setMonthlyPayment] = useState('5000');
   const [showSchedule, setShowSchedule] = useState(false);
+  const [currentPrincipal, setCurrentPrincipal] = useState<number>(BILLING_CONSTANTS.INITIAL_DEBT);
+
+  // Load debt state when component mounts (for state persistence across tabs)
+  useEffect(() => {
+    loadDebtState().then(savedState => {
+      if (savedState) {
+        setCurrentPrincipal(savedState.currentPrincipal);
+      }
+    }).catch(error => {
+      console.error('Error loading debt state:', error);
+    });
+  }, []);
 
   const { simulatePayments } = useDebtCalculator({
-    currentPrincipal: INITIAL_DEBT,
-    interestRate: 0.035,
-    minimumPayment: INITIAL_DEBT * 0.05,
+    currentPrincipal: currentPrincipal,
+    interestRate: BILLING_CONSTANTS.MONTHLY_INTEREST_RATE,
+    minimumPayment: Math.max(currentPrincipal * BILLING_CONSTANTS.MINIMUM_PAYMENT_RATE, BILLING_CONSTANTS.MINIMUM_PAYMENT_FLOOR),
     statementDate: new Date(),
-    dueDate: new Date(),
+    dueDate: getNextDueDate(),
   });
 
   const handleAmountChange = (value: string) => {

@@ -38,6 +38,10 @@ export const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [achievedMilestones, setAchievedMilestones] = useState<MilestoneAchievement[]>([]);
   const [celebrationMilestone, setCelebrationMilestone] = useState<number | null>(null);
+  const [initialDebtState, setInitialDebtState] = useState<{
+    currentPrincipal: number;
+    minimumPayment: number;
+  } | null>(null);
   const previousPrincipalRef = useRef<number>(BILLING_CONSTANTS.INITIAL_DEBT);
 
   const {
@@ -48,9 +52,9 @@ export const Dashboard = () => {
     updateMinimumPayment,
     monthlyRate,
   } = useDebtCalculator({
-    currentPrincipal: BILLING_CONSTANTS.INITIAL_DEBT,
+    currentPrincipal: initialDebtState?.currentPrincipal ?? BILLING_CONSTANTS.INITIAL_DEBT,
     interestRate: BILLING_CONSTANTS.MONTHLY_INTEREST_RATE,
-    minimumPayment: BILLING_CONSTANTS.INITIAL_MIN_PAYMENT,
+    minimumPayment: initialDebtState?.minimumPayment ?? BILLING_CONSTANTS.INITIAL_MIN_PAYMENT,
     statementDate: new Date(),
     dueDate: getNextDueDate(),
   });
@@ -65,9 +69,20 @@ export const Dashboard = () => {
         ]);
         
         if (savedDebtState) {
+          // Set initial state first (this will cause useDebtCalculator to reinitialize)
+          setInitialDebtState({
+            currentPrincipal: savedDebtState.currentPrincipal,
+            minimumPayment: savedDebtState.minimumPayment,
+          });
           adjustPrincipal(savedDebtState.currentPrincipal);
           updateMinimumPayment(savedDebtState.minimumPayment);
           previousPrincipalRef.current = savedDebtState.currentPrincipal;
+        } else {
+          // No saved state, use initial values
+          setInitialDebtState({
+            currentPrincipal: BILLING_CONSTANTS.INITIAL_DEBT,
+            minimumPayment: BILLING_CONSTANTS.INITIAL_MIN_PAYMENT,
+          });
         }
         
         setAchievedMilestones(milestones);
@@ -85,7 +100,7 @@ export const Dashboard = () => {
     };
 
     loadData();
-  }, []);
+  }, [adjustPrincipal, updateMinimumPayment]);
 
   // Subscribe to real-time payment updates
   useEffect(() => {
