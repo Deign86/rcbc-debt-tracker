@@ -28,11 +28,8 @@ export const MotivationalDashboard = ({
   return (
     <div className="space-y-4">
       {/* Motivational Message */}
-      <GlassCard variant="primary" shimmer className="overflow-hidden relative">
-        {/* Static gradient orbs */}
-        <div className="absolute -top-10 -left-10 w-24 h-24 bg-primary/20 rounded-full blur-2xl pointer-events-none" />
-        <div className="absolute -bottom-10 -right-10 w-20 h-20 bg-primary/15 rounded-full blur-xl pointer-events-none" />
-        <GlassCardContent className="pt-6 relative">
+      <GlassCard variant="primary" className="overflow-hidden relative">
+        <GlassCardContent className="py-6 relative">
           <p className="text-lg sm:text-xl font-semibold text-center text-foreground">
             {motivationalMessage}
           </p>

@@ -44,7 +44,7 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
   const quickAmounts = [500, 1000, 2000, 5000];
 
   return (
-    <GlassCard variant="default" className="mx-4 mt-6">
+    <GlassCard variant="default" className="h-full flex flex-col">
       <GlassCardHeader className="pb-3">
         <div className="flex items-center gap-2">
           <div className="glass-primary p-2.5 rounded-xl">
@@ -53,7 +53,7 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
           <GlassCardTitle className="text-foreground font-semibold">Log Payment</GlassCardTitle>
         </div>
       </GlassCardHeader>
-      <GlassCardContent className="space-y-4">
+      <GlassCardContent className="space-y-4 flex-1 flex flex-col">
         <div className="space-y-2">
           <Label htmlFor="payment-amount" className="text-muted-foreground text-sm">Payment Amount</Label>
           <div className="relative">
@@ -134,7 +134,7 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
         <Button
           onClick={handleSubmit}
           disabled={!calculation || !amount}
-          className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed rounded-xl"
+          className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed rounded-xl mt-auto"
         >
           <CheckCircle2 className="h-5 w-5 mr-2" />
           Record Payment

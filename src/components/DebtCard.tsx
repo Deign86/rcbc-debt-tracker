@@ -22,15 +22,9 @@ export const DebtCard = ({
   return (
     <GlassCard 
       variant="strong" 
-      shimmer 
-      glow
-      className="mx-4 mt-6 overflow-hidden relative"
+      className="overflow-hidden relative h-full flex flex-col"
     >
-      {/* Static gradient orbs for depth - no animation */}
-      <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-20 -left-20 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
-      
-      <GlassCardHeader className="pb-4 relative">
+      <GlassCardHeader className="pb-4">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
@@ -53,7 +47,7 @@ export const DebtCard = ({
         </div>
       </GlassCardHeader>
 
-      <GlassCardContent className="space-y-6 relative">
+      <GlassCardContent className="space-y-6 flex-1 flex flex-col">
         <div className="space-y-2">
           <div className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
             ₱{totalDebt.toLocaleString('en-PH', {
@@ -71,11 +65,11 @@ export const DebtCard = ({
 
         <Separator className="bg-white/20 dark:bg-white/10" />
 
-        <div className="flex justify-between items-center">
+        <div className="grid grid-cols-2 gap-3 mt-auto">
           <Button
             onClick={onEditMinPayment}
             variant="ghost"
-            className="flex flex-col items-start h-auto p-3 -ml-3 glass-button rounded-xl group cursor-pointer"
+            className="flex flex-col items-start h-auto p-3 glass-button rounded-xl group cursor-pointer"
           >
             <span className="text-xs text-muted-foreground">Minimum Payment</span>
             <span className="text-lg font-semibold flex items-center gap-1.5 text-foreground group-hover:text-primary transition-colors">
@@ -86,7 +80,7 @@ export const DebtCard = ({
               <Pencil className="h-3 w-3 opacity-50 group-hover:opacity-100 transition-opacity" />
             </span>
           </Button>
-          <div className="text-right glass-subtle p-3 rounded-xl">
+          <div className="glass-subtle p-3 rounded-xl flex flex-col items-center justify-center">
             <p className="text-xs text-muted-foreground mb-1.5">Monthly Interest</p>
             <Badge 
               variant="secondary" 
