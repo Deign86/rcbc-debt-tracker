@@ -3,11 +3,12 @@
 A **mobile-first Progressive Web App (PWA)** for tracking and managing RCBC credit card debt repayment. Built with React, TypeScript, Firebase, and Tailwind CSS.
 
 ### 🎨 Design Philosophy
-Featuring a **Match Aesthetic** design language with a sophisticated **Sage Green & Navy Blue** color palette inspired by "Black Panther". The UI provides a premium, cohesive experience across light and dark modes with:
+Featuring a **Liquid Glass** design language with the signature **RCBC Blue (#4A90A4)** banking theme. The UI provides a premium, modern experience across light and dark modes with:
+- **Glassmorphism effects** with backdrop blur and transparency
+- **Unified animation system** - subtle, performant motion design
 - Custom transparent logo integrated via Firebase Storage
-- Smooth animations and micro-interactions
-- Modern glassmorphism effects
-- Consistent spacing and typography scale
+- Inter typography with consistent spacing scale
+- Responsive liquid glass cards with soft shadows
 
 ## ✨ Features
 
@@ -212,6 +213,7 @@ rcbc-debt-tracker/
 │   │   └── ui/                  # shadcn/ui components
 │   │       ├── button.tsx
 │   │       ├── card.tsx
+│   │       ├── glass-card.tsx   # Glassmorphism card component
 │   │       ├── sheet.tsx
 │   │       └── ...
 │   ├── pages/                   # Route pages
@@ -306,6 +308,10 @@ rcbc-debt-tracker/
 - [x] **shadcn/ui component library integration**
 - [x] **Welcome animation** for first-time users
 - [x] **AI coding agent instructions** in `.github/copilot-instructions.md`
+- [x] **Liquid Glass Design System** - RCBC Blue (#4A90A4) theme overhaul
+- [x] **Unified animation system** - fade-in, scale-in, subtle pulse
+- [x] **Glassmorphism UI components** - glass-card, backdrop-blur effects
+- [x] **Performance-optimized transitions** - targeted hover states
 
 ### 🚧 In Progress
 - [ ] Payment history page with full transaction list
@@ -321,26 +327,39 @@ rcbc-debt-tracker/
 
 ## 🎨 Design System
 
+### Liquid Glass Theme
+The app uses a modern **Liquid Glass** design system with the RCBC Blue banking palette:
+
 ### Color Palette
-- **Primary (Sage Green)**: 
-  - Light: `#9fafa3` 
-  - Dark: `#7a8a7e`
-- **Secondary (Navy Blue)**: 
-  - Light: `#2c3e50`
-  - Dark: `#1a252f`
-- **Accent**: Match-inspired complementary tones
-- **Surface**: Dynamic light/dark mode backgrounds
+- **Primary (RCBC Blue)**: `#4A90A4` - Trust, professionalism, banking
+- **Surface Glass**: Semi-transparent whites with backdrop blur
+- **Dark Mode Glass**: Dark surfaces with subtle transparency
+- **Accent States**: Emerald green for success, amber for warnings
+
+### Animation System
+Unified, performant motion design principles:
+- **`animate-fade-in`** (0.3s) - Content entrance with subtle Y-translate
+- **`animate-scale-in`** (0.2s) - Modals and dialogs only
+- **`animate-pulse-subtle`** - Gentle emphasis, used sparingly
+- **Stagger delays**: 50-250ms for sequential content
+- **Transitions**: Targeted `transition-colors` for hover states (not `transition-all`)
+
+### Glassmorphism Components
+- **Glass Cards**: `glass-card` class with backdrop-blur, border glow
+- **Glass Buttons**: Translucent with soft hover states
+- **Background**: Static gradient orbs for depth (no animation)
 
 ### Typography
-- **Headings**: System font stack optimized for readability
-- **Body**: Inter, system-ui fallback
-- **Numeric**: Tabular figures for financial data
+- **Font Family**: Inter (Google Fonts)
+- **Headings**: Bold weight with proper hierarchy
+- **Body**: Regular weight, optimized for readability
+- **Numeric**: Tabular figures for financial data alignment
 
 ### Components
-- **Cards**: Elevated surfaces with subtle shadows
-- **Buttons**: Consistent touch targets (minimum 44px height)
-- **Bottom Sheets**: Native-feeling drawer interactions
-- **Modals**: Centered overlays with backdrop blur
+- **Glass Cards**: Elevated surfaces with backdrop-blur and subtle borders
+- **Buttons**: Consistent touch targets (minimum 44px height), soft hover glow
+- **Bottom Sheets**: Native-feeling drawer interactions with scale-in animation
+- **Modals**: Centered overlays with backdrop blur, scale-in entrance
 
 ## 🤝 Contributing
 
