@@ -3,7 +3,6 @@ import { useDebtCalculator } from '../hooks/useDebtCalculator';
 import { loadDebtState } from '../services/firestoreService';
 import { BILLING_CONSTANTS, getNextDueDate } from '../config/billingConstants';
 import { formatCurrencyInput, parseCurrencyInput } from '../utils/currency';
-import { showError } from '../utils/errorHandler';
 import { GlassCard, GlassCardContent, GlassCardHeader, GlassCardTitle } from "@/components/ui/glass-card";
 import { Calculator, TrendingUp, Coins, Clock } from "lucide-react";
 
