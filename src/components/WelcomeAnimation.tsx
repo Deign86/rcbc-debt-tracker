@@ -26,22 +26,28 @@ export const WelcomeAnimation = ({ onComplete }: WelcomeAnimationProps) => {
 
     return (
         <div
-            className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-cream-50 dark:bg-matcha-900 transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-background via-background to-primary/10 transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
                 }`}
         >
-            <div className="relative flex flex-col items-center">
-                {/* Logo Circle Animation */}
-                <div className="w-32 h-32 mb-6 relative flex items-center justify-center">
-                    <div className="absolute inset-0 bg-matcha-500 rounded-full opacity-20 animate-ping" />
+            {/* Static background orbs */}
+            <div className="absolute -top-20 -left-20 w-64 h-64 bg-primary/15 rounded-full blur-3xl" />
+            <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
+            <div className="absolute top-1/3 right-1/4 w-40 h-40 bg-primary/10 rounded-full blur-2xl" />
+
+            <div className="relative flex flex-col items-center animate-fade-in">
+                {/* Logo Circle */}
+                <div className="w-36 h-36 mb-8 relative flex items-center justify-center">
+                    <div className="absolute inset-0 glass-primary rounded-2xl" />
+                    <div className="absolute inset-2 glass rounded-xl" />
                     <img
                         src="/logo-new.webp"
                         alt="Logo"
-                        className="w-28 h-28 object-contain animate-pulse drop-shadow-xl"
+                        className="w-24 h-24 object-contain drop-shadow-xl relative z-10"
                     />
                 </div>
 
-                {/* Text Animation */}
-                <h1 className="text-3xl font-bold text-matcha-900 dark:text-cream-50 animate-fade-in-up">
+                {/* Text */}
+                <h1 className="text-3xl font-bold text-foreground glass-subtle px-8 py-4 rounded-2xl">
                     Welcome, Deign
                 </h1>
             </div>

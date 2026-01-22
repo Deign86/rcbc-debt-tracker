@@ -1,9 +1,9 @@
 import type { MilestoneData, InterestSavingsData, DebtFreeProjection } from '../utils/debtMotivation';
 import { format } from 'date-fns';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Zap, Coins, Clock, TrendingUp, Trophy, Rocket } from "lucide-react";
+import { GlassCard, GlassCardContent, GlassCardHeader, GlassCardTitle } from "@/components/ui/glass-card";
 
 interface MotivationalDashboardProps {
   milestones: MilestoneData[];
@@ -28,109 +28,116 @@ export const MotivationalDashboard = ({
   return (
     <div className="space-y-4">
       {/* Motivational Message */}
-      <Card className="bg-gradient-to-r from-matcha-50 to-cream-100 dark:from-matcha-900 dark:to-matcha-800 border-matcha-300 dark:border-matcha-700">
-        <CardContent className="pt-6">
-          <p className="text-lg sm:text-xl font-bold text-center text-matcha-800 dark:text-cream-100">
+      <GlassCard variant="primary" shimmer className="overflow-hidden relative">
+        {/* Static gradient orbs */}
+        <div className="absolute -top-10 -left-10 w-24 h-24 bg-primary/20 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute -bottom-10 -right-10 w-20 h-20 bg-primary/15 rounded-full blur-xl pointer-events-none" />
+        <GlassCardContent className="pt-6 relative">
+          <p className="text-lg sm:text-xl font-semibold text-center text-foreground">
             {motivationalMessage}
           </p>
-        </CardContent>
-      </Card>
+        </GlassCardContent>
+      </GlassCard>
 
       {/* Main Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Time Saved vs Minimum Payments */}
-        <Card>
-          <CardContent className="pt-6">
+        <GlassCard variant="subtle">
+          <GlassCardContent className="pt-6">
             <div className="text-center space-y-2">
               <div className="flex justify-center">
-                <div className="w-12 h-12 rounded-full bg-matcha-100 dark:bg-matcha-800 flex items-center justify-center">
-                  <Zap className="h-6 w-6 text-matcha-700 dark:text-matcha-300" />
+                <div className="w-14 h-14 glass-primary rounded-2xl flex items-center justify-center">
+                  <Zap className="h-7 w-7 text-primary" />
                 </div>
               </div>
-              <h3 className="text-sm font-semibold text-matcha-600 dark:text-matcha-400">
+              <h3 className="text-sm font-semibold text-muted-foreground">
                 Time Saved vs Minimum
               </h3>
               {debtFreeProjection.monthsSavedVsMinimum > 0 ? (
                 <>
-                  <p className="text-2xl font-bold text-matcha-700 dark:text-matcha-300">
+                  <p className="text-2xl font-bold text-primary">
                     {debtFreeProjection.monthsSavedVsMinimum} months
                   </p>
-                  <p className="text-sm text-matcha-600 dark:text-matcha-400 flex items-center justify-center gap-1">
-                    {(debtFreeProjection.monthsSavedVsMinimum / 12).toFixed(1)} years faster! <Rocket className="h-4 w-4 inline" />
+                  <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+                    {(debtFreeProjection.monthsSavedVsMinimum / 12).toFixed(1)} years faster! <Rocket className="h-4 w-4 inline text-primary" />
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="text-2xl font-bold text-matcha-800 dark:text-cream-100">Start saving!</p>
-                  <p className="text-sm text-matcha-600 dark:text-matcha-400">Pay more to save time</p>
+                  <p className="text-2xl font-bold text-foreground">Start saving!</p>
+                  <p className="text-sm text-muted-foreground">Pay more to save time</p>
                 </>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </GlassCardContent>
+        </GlassCard>
 
         {/* Interest Savings */}
-        <Card>
-          <CardContent className="pt-6">
+        <GlassCard variant="subtle">
+          <GlassCardContent className="pt-6">
             <div className="text-center space-y-2">
               <div className="flex justify-center">
-                <div className="w-12 h-12 rounded-full bg-matcha-100 dark:bg-matcha-800 flex items-center justify-center">
-                  <Coins className="h-6 w-6 text-matcha-700 dark:text-matcha-300" />
+                <div className="w-14 h-14 glass-primary rounded-2xl flex items-center justify-center">
+                  <Coins className="h-7 w-7 text-primary" />
                 </div>
               </div>
-              <h3 className="text-sm font-semibold text-matcha-600 dark:text-matcha-400">
+              <h3 className="text-sm font-semibold text-muted-foreground">
                 Interest Saved vs Minimum
               </h3>
-              <p className="text-2xl font-bold text-matcha-700 dark:text-matcha-300">
+              <p className="text-2xl font-bold text-primary">
                 ₱{interestSavings.totalInterestSavedVsMinimum.toLocaleString()}
               </p>
-              <Badge variant="secondary" className="text-xs bg-matcha-200 dark:bg-matcha-700 text-matcha-800 dark:text-cream-100">
+              <Badge variant="secondary" className="text-xs glass-primary text-primary border-0 rounded-lg px-3 py-1">
                 {interestSavings.savingsPercentage.toFixed(1)}% savings
               </Badge>
             </div>
-          </CardContent>
-        </Card>
+          </GlassCardContent>
+        </GlassCard>
 
         {/* Next Payment Due */}
-        <Card className="sm:col-span-2 lg:col-span-1">
-          <CardContent className="pt-6">
+        <GlassCard variant="subtle" className="sm:col-span-2 lg:col-span-1">
+          <GlassCardContent className="pt-6">
             <div className="text-center space-y-2">
               <div className="flex justify-center">
-                <div className="w-12 h-12 rounded-full bg-matcha-100 dark:bg-matcha-800 flex items-center justify-center">
-                  <Clock className="h-6 w-6 text-matcha-700 dark:text-matcha-300" />
+                <div className="w-14 h-14 glass-primary rounded-2xl flex items-center justify-center">
+                  <Clock className="h-7 w-7 text-primary" />
                 </div>
               </div>
-              <h3 className="text-sm font-semibold text-matcha-600 dark:text-matcha-400">
+              <h3 className="text-sm font-semibold text-muted-foreground">
                 Next Payment Due
               </h3>
-              <p className="text-2xl font-bold text-matcha-800 dark:text-cream-100">
+              <p className="text-2xl font-bold text-foreground">
                 {debtFreeProjection.daysUntilNextPayment} days
               </p>
-              <p className="text-sm text-matcha-600 dark:text-matcha-400">
+              <p className="text-sm text-muted-foreground">
                 {format(debtFreeProjection.nextPaymentDue, 'MMM d, yyyy')}
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </GlassCardContent>
+        </GlassCard>
       </div>
 
       {/* Progress Bar with Milestones */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-matcha-800 dark:text-cream-100">
-            <TrendingUp className="h-5 w-5 text-matcha-700 dark:text-matcha-300" />
+      <GlassCard variant="default">
+        <GlassCardHeader>
+          <GlassCardTitle className="flex items-center gap-2 text-foreground">
+            <div className="glass-primary p-2 rounded-xl">
+              <TrendingUp className="h-5 w-5 text-primary" />
+            </div>
             Debt Repayment Progress
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+          </GlassCardTitle>
+        </GlassCardHeader>
+        <GlassCardContent className="space-y-4">
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="font-medium text-matcha-800 dark:text-cream-100">{progressPercentage.toFixed(1)}% Complete</span>
-              <span className="text-matcha-600 dark:text-matcha-400">
+              <span className="font-medium text-foreground">{progressPercentage.toFixed(1)}% Complete</span>
+              <span className="text-muted-foreground">
                 ₱{currentPrincipal.toLocaleString()} remaining
               </span>
             </div>
-            <Progress value={progressPercentage} className="h-3 bg-matcha-200 dark:bg-matcha-800" />
+            <div className="glass-subtle rounded-full p-1">
+              <Progress value={progressPercentage} className="h-3 bg-transparent" />
+            </div>
           </div>
 
           {/* Milestones Grid */}
@@ -138,19 +145,19 @@ export const MotivationalDashboard = ({
             {milestones.map((milestone) => (
               <div
                 key={milestone.percentage}
-                className={`flex flex-col items-center p-2 rounded-lg border ${
+                className={`flex flex-col items-center p-3 rounded-xl transition-colors cursor-pointer ${
                   milestone.reached
-                    ? 'bg-matcha-100 dark:bg-matcha-800 border-matcha-500 dark:border-matcha-600'
-                    : 'bg-cream-100 dark:bg-matcha-900 border-matcha-300 dark:border-matcha-700'
+                    ? 'glass-primary'
+                    : 'glass-subtle hover:glass'
                 }`}
               >
                 <Trophy
                   className={`h-5 w-5 mb-1 ${
-                    milestone.reached ? 'text-matcha-700 dark:text-matcha-300' : 'text-matcha-500 dark:text-matcha-500'
+                    milestone.reached ? 'text-primary' : 'text-muted-foreground'
                   }`}
                 />
                 <span className={`text-xs font-semibold ${
-                  milestone.reached ? 'text-matcha-800 dark:text-cream-100' : 'text-matcha-600 dark:text-matcha-400'
+                  milestone.reached ? 'text-foreground' : 'text-muted-foreground'
                 }`}>
                   {milestone.percentage}%
                 </span>
@@ -160,14 +167,14 @@ export const MotivationalDashboard = ({
 
           {nextMilestone && (
             <div className="pt-2">
-              <p className="text-sm text-matcha-600 dark:text-matcha-400 text-center">
-                Next milestone: <span className="font-semibold text-matcha-800 dark:text-cream-100">{nextMilestone.percentage}%</span>
+              <p className="text-sm text-muted-foreground text-center">
+                Next milestone: <span className="font-semibold text-primary">{nextMilestone.percentage}%</span>
                 {' '}(₱{nextMilestone.remainingAmount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} to go)
               </p>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </GlassCardContent>
+      </GlassCard>
     </div>
   );
 };

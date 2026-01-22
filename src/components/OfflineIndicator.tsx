@@ -23,7 +23,7 @@ export const OfflineIndicator = () => {
         'lg:bottom-4 lg:left-auto lg:right-4 lg:max-w-md lg:py-3',
         'transition-all duration-200',
         !isOnline && 'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-700',
-        isOnline && syncStatus === 'syncing' && 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-700',
+        isOnline && syncStatus === 'syncing' && 'bg-primary/10 border-primary/30 dark:bg-primary/20 dark:border-primary/40',
         isOnline && syncStatus === 'error' && 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-700'
       )}
     >
@@ -33,13 +33,13 @@ export const OfflineIndicator = () => {
             <WifiOff className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
           )}
           {isOnline && syncStatus === 'syncing' && (
-            <RefreshCw className="h-5 w-5 text-blue-600 dark:text-blue-400 animate-spin" />
+            <RefreshCw className="h-5 w-5 text-primary animate-spin" />
           )}
           {isOnline && syncStatus === 'error' && (
             <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
           )}
           {isOnline && syncStatus === 'idle' && queueCount > 0 && (
-            <Wifi className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <Wifi className="h-5 w-5 text-primary" />
           )}
         </div>
         
@@ -60,10 +60,10 @@ export const OfflineIndicator = () => {
           
           {isOnline && syncStatus === 'syncing' && (
             <>
-              <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+              <p className="text-sm font-medium text-primary">
                 Syncing...
               </p>
-              <p className="text-xs text-blue-600 dark:text-blue-400 truncate">
+              <p className="text-xs text-primary/70 truncate">
                 {queueCount > 0 && `${queueCount} change${queueCount === 1 ? '' : 's'} remaining`}
               </p>
             </>
@@ -82,10 +82,10 @@ export const OfflineIndicator = () => {
           
           {isOnline && syncStatus === 'idle' && queueCount > 0 && (
             <>
-              <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+              <p className="text-sm font-medium text-primary">
                 Ready to sync
               </p>
-              <p className="text-xs text-blue-600 dark:text-blue-400 truncate">
+              <p className="text-xs text-primary/70 truncate">
                 {queueCount} change{queueCount === 1 ? '' : 's'} pending
               </p>
             </>

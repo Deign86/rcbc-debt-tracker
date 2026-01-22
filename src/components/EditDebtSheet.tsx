@@ -55,19 +55,19 @@ export const EditDebtSheet = ({
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="bottom" className="max-w-2xl mx-auto bg-cream-50 dark:bg-matcha-900">
+      <SheetContent side="bottom" className="max-w-2xl mx-auto glass-strong rounded-t-2xl border-t-0">
         <SheetHeader>
-          <SheetTitle className="text-matcha-800 dark:text-cream-100">Adjust Debt Amount</SheetTitle>
-          <SheetDescription className="text-matcha-600 dark:text-matcha-300">
+          <SheetTitle className="text-foreground">Adjust Debt Amount</SheetTitle>
+          <SheetDescription className="text-muted-foreground">
             Update your principal debt amount
           </SheetDescription>
         </SheetHeader>
 
         <div className="space-y-4 py-6">
           <div className="space-y-2">
-            <Label htmlFor="debt-amount" className="text-matcha-700 dark:text-matcha-200">New Principal Amount</Label>
+            <Label htmlFor="debt-amount" className="text-muted-foreground">New Principal Amount</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-matcha-500 dark:text-matcha-400 text-lg">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-xl font-medium">
                 ₱
               </span>
               <Input
@@ -77,30 +77,36 @@ export const EditDebtSheet = ({
                 value={amount}
                 onChange={(e) => handleAmountChange(e.target.value)}
                 placeholder="0.00"
-                className="pl-8 text-2xl font-semibold h-14 text-matcha-900 dark:text-cream-50"
+                className="pl-10 text-2xl font-semibold h-14 text-foreground glass-input border-white/20 dark:border-white/10 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-colors rounded-xl"
                 autoFocus
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="note" className="text-matcha-700 dark:text-matcha-200">Note (Optional)</Label>
+            <Label htmlFor="note" className="text-muted-foreground">Note (Optional)</Label>
             <Input
               id="note"
               type="text"
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="e.g., Statement adjustment, Error correction"
-              className="text-matcha-900 dark:text-cream-50"
+              className="text-foreground glass-input border-white/20 dark:border-white/10 rounded-xl"
             />
           </div>
         </div>
 
         <SheetFooter className="gap-2 sm:gap-0">
-          <Button variant="outline" onClick={onClose} className="flex-1 border-matcha-300 dark:border-matcha-600 text-matcha-700 dark:text-matcha-200 hover:bg-matcha-100 dark:hover:bg-matcha-800">
+          <Button 
+            variant="outline" 
+            onClick={onClose} 
+            className="flex-1 glass-button border-white/20 dark:border-white/10 text-muted-foreground hover:text-foreground cursor-pointer rounded-xl">
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={!isValid()} className="flex-1 bg-matcha-600 hover:bg-matcha-700 text-cream-50 disabled:opacity-50 disabled:cursor-not-allowed">
+          <Button 
+            onClick={handleSave} 
+            disabled={!isValid()} 
+            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-lg transition-colors">
             Save Changes
           </Button>
         </SheetFooter>

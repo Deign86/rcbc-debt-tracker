@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import type { PaymentCalculation } from '../types/debt';
 import { formatCurrencyInput, parseCurrencyInput } from '../utils/currency';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Wallet, ArrowDownRight, ArrowUpRight, CheckCircle2 } from "lucide-react";
+import { GlassCard, GlassCardContent, GlassCardHeader, GlassCardTitle } from "@/components/ui/glass-card";
 
 interface PaymentFormProps {
   onCalculate: (amount: number) => PaymentCalculation;
@@ -43,15 +44,20 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
   const quickAmounts = [500, 1000, 2000, 5000];
 
   return (
-    <Card className="mx-4 mt-6 border-matcha-300 dark:border-matcha-600">
-      <CardHeader>
-        <CardTitle className="text-matcha-800 dark:text-cream-100">Log Payment</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <GlassCard variant="default" className="mx-4 mt-6">
+      <GlassCardHeader className="pb-3">
+        <div className="flex items-center gap-2">
+          <div className="glass-primary p-2.5 rounded-xl">
+            <Wallet className="h-5 w-5 text-primary" />
+          </div>
+          <GlassCardTitle className="text-foreground font-semibold">Log Payment</GlassCardTitle>
+        </div>
+      </GlassCardHeader>
+      <GlassCardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="payment-amount" className="text-matcha-700 dark:text-matcha-200">Payment Amount</Label>
+          <Label htmlFor="payment-amount" className="text-muted-foreground text-sm">Payment Amount</Label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-matcha-500 dark:text-matcha-400 text-lg">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-xl font-medium">
               ₱
             </span>
             <Input
@@ -61,7 +67,7 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
               value={amount}
               onChange={(e) => handleAmountChange(e.target.value)}
               placeholder="0.00"
-              className="pl-8 text-2xl font-semibold h-14 text-matcha-900 dark:text-cream-50"
+              className="pl-10 text-2xl font-semibold h-14 text-foreground glass-input border-white/20 dark:border-white/10 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-colors rounded-xl"
             />
           </div>
         </div>
@@ -70,22 +76,27 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
           {quickAmounts.map((quickAmount) => (
             <Button
               key={quickAmount}
-              variant="secondary"
+              variant="outline"
               size="sm"
               onClick={() => handleAmountChange(quickAmount.toString())}
-              className="bg-matcha-100 dark:bg-matcha-700 hover:bg-matcha-200 dark:hover:bg-matcha-600 text-matcha-800 dark:text-cream-100"
+              className="glass-button hover:glass-primary text-foreground border-white/20 dark:border-white/10 cursor-pointer"
             >
-              ₱{quickAmount}
+              ₱{quickAmount.toLocaleString()}
             </Button>
           ))}
         </div>
 
         {calculation && (
-          <Card className="bg-matcha-50 dark:bg-matcha-900 border-matcha-300 dark:border-matcha-700">
-            <CardContent className="pt-4 space-y-3">
+          <GlassCard variant="subtle" className="overflow-hidden animate-fade-in">
+            <GlassCardContent className="pt-4 space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-matcha-700 dark:text-matcha-200">Interest Payment</span>
-                <Badge variant="destructive" className="font-semibold">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-destructive/10">
+                    <ArrowDownRight className="h-4 w-4 text-destructive" />
+                  </div>
+                  <span className="text-sm font-medium text-muted-foreground">Interest Payment</span>
+                </div>
+                <Badge variant="destructive" className="font-semibold rounded-lg px-3 py-1">
                   ₱{calculation.interest.toLocaleString('en-PH', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
@@ -93,36 +104,42 @@ export const PaymentForm = ({ onCalculate, onSubmit }: PaymentFormProps) => {
                 </Badge>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-matcha-700 dark:text-matcha-200">Principal Payment</span>
-                <Badge variant="default" className="bg-green-600 hover:bg-green-700 font-semibold">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-green-600/10">
+                    <ArrowUpRight className="h-4 w-4 text-green-600" />
+                  </div>
+                  <span className="text-sm font-medium text-muted-foreground">Principal Payment</span>
+                </div>
+                <Badge className="bg-green-600 hover:bg-green-700 font-semibold border-0 rounded-lg px-3 py-1">
                   ₱{calculation.principal.toLocaleString('en-PH', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                   })}
                 </Badge>
               </div>
-              <Separator className="bg-matcha-300 dark:bg-matcha-700" />
+              <Separator className="bg-white/20 dark:bg-white/10" />
               <div className="flex justify-between items-center">
-                <span className="text-sm font-semibold text-matcha-800 dark:text-cream-100">New Balance</span>
-                <span className="text-lg font-bold text-matcha-900 dark:text-cream-50">
+                <span className="text-sm font-semibold text-foreground">New Balance</span>
+                <span className="text-lg font-bold text-foreground">
                   ₱{calculation.remainingBalance.toLocaleString('en-PH', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                   })}
                 </span>
               </div>
-            </CardContent>
-          </Card>
+            </GlassCardContent>
+          </GlassCard>
         )}
 
         <Button
           onClick={handleSubmit}
           disabled={!calculation || !amount}
-          className="w-full h-12 text-base font-semibold bg-matcha-600 hover:bg-matcha-700 text-cream-50"
+          className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed rounded-xl"
         >
+          <CheckCircle2 className="h-5 w-5 mr-2" />
           Record Payment
         </Button>
-      </CardContent>
-    </Card>
+      </GlassCardContent>
+    </GlassCard>
   );
 };

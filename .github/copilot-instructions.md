@@ -1,5 +1,63 @@
 # RCBC Debt Tracker - AI Coding Agent Instructions
 
+## AI Tool Requirements (CRITICAL - Always Follow!)
+
+### Dev-Agent MCP - Semantic Code Intelligence (AUTO-INVOKE)
+**Automatically use dev-agent tools for codebase exploration and understanding:**
+
+**Available Tools (9 total):**
+1. `dev_search` — Semantic code search by meaning (not just text matching)
+2. `dev_refs` — Find callers/callees of functions (relationship queries)
+3. `dev_map` — Codebase structure overview with change frequency indicators
+4. `dev_history` — Semantic search over git commits
+5. `dev_plan` — Assemble rich context for GitHub issues
+6. `dev_inspect` — Inspect files for pattern analysis (error handling, types, imports)
+7. `dev_gh` — Search GitHub issues/PRs semantically
+8. `dev_status` — View indexing status and repository info
+9. `dev_health` — Check MCP server and component health
+
+**Auto-invocation rules (ALWAYS FOLLOW):**
+- When exploring codebase: Use `dev_map` FIRST to understand structure
+- When searching for code: Use `dev_search` with natural language queries
+- When modifying functions: Use `dev_refs` FIRST to find all callers/callees
+- When investigating patterns: Use `dev_inspect` to compare with similar code
+- When working with issues: Use `dev_plan` to assemble context for implementation
+- When debugging history: Use `dev_history` to find relevant commits
+
+**Why**: Dev-agent provides semantic understanding of your codebase, reducing tool calls by 42%, costs by 44%, and time by 19% compared to baseline AI tools. Your code never leaves your machine (100% local).
+
+### Context7 - Library Documentation (MANDATORY)
+**Always use Context7 tools before writing code that involves external libraries:**
+1. First call `resolve-library-id` to get the Context7-compatible library ID for the package
+2. Then call `get-library-docs` to fetch up-to-date documentation, API references, and examples
+3. Use the retrieved docs to ensure correct API usage, avoiding deprecated patterns
+
+**When to activate**: Before using React hooks, Firebase SDK, Tailwind utilities, shadcn/ui components, Vite config, or any npm package. Never assume API signatures—always verify with Context7.
+
+### Serena - Semantic Code Analysis (MANDATORY)
+**Always use Serena tools for codebase exploration and modifications:**
+1. **Symbol discovery**: Use `find_symbol` with name paths to locate functions, classes, interfaces
+2. **Reference tracking**: Use `find_referencing_symbols` before modifying any symbol to find all usages
+3. **Code editing**: Use `replace_symbol_body` for precise symbol-level edits
+4. **Pattern search**: Use `search_for_pattern` for flexible text/regex searches across files
+5. **File overview**: Use `get_symbols_overview` to understand file structure before diving in
+
+**When to activate**: 
+- Before any code modification (understand dependencies first)
+- When searching for implementations or usages
+- When refactoring symbols that may be referenced elsewhere
+- When navigating unfamiliar parts of the codebase
+
+### Tool Priority Order
+1. **Codebase exploration**: Dev-Agent `dev_map` → `dev_search` → Serena symbolic tools
+2. **Searching code**: Dev-Agent `dev_search` → `dev_refs` → Serena pattern search
+3. **Library usage**: Context7 docs → then implement
+4. **Editing code**: Dev-Agent `dev_refs` → Serena find references → Serena symbolic edit
+5. **Debugging**: Dev-Agent `dev_history` → `dev_inspect` → targeted file reads
+6. **Issue context**: Dev-Agent `dev_plan` → `dev_gh` for related issues/PRs
+
+---
+
 ## Project Overview
 Mobile-first PWA for RCBC credit card debt tracking using **Average Daily Balance (ADB) interest calculation**. Built with React 19, TypeScript, Vite, Firebase (Firestore + Auth + Storage + Data Connect), and Tailwind CSS with a custom "Match Aesthetic" design system (Sage Green & Navy Blue palette).
 
