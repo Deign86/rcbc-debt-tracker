@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { subscribeToPayments, deletePayment, loadDebtState } from '../services/firestoreService';
 import type { Payment } from '../types/debt';
-import { CreditCard, Edit3, BarChart3, Trash2, AlertTriangle } from 'lucide-react';
+import { CreditCard, Edit3, BarChart3, Trash2, AlertTriangle, History as HistoryIcon } from 'lucide-react';
 import { showError } from '../utils/errorHandler';
+import { GlassCard, GlassCardContent } from "@/components/ui/glass-card";
 
 export const History = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -13,7 +14,8 @@ export const History = () => {
   // Load debt state when component mounts (for state persistence across tabs)
   useEffect(() => {
     loadDebtState().catch(error => {
-      showError(error, 'Failed to load debt state', { severity: 'warning' });
+      // Silently fail - app will use defaults if Firebase is not configured
+      console.warn('Failed to load debt state:', error);
     });
   }, []);
 
@@ -64,8 +66,8 @@ export const History = () => {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-matcha-600 mx-auto mb-4"></div>
-          <p className="text-matcha-700 dark:text-cream-200">Loading payment history...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading payment history...</p>
         </div>
       </div>
     );
@@ -74,90 +76,112 @@ export const History = () => {
   return (
     <div className="pb-6">
       {/* Header */}
-      <div className="bg-cream-50 dark:bg-matcha-800 shadow-sm sticky top-0 z-10">
-        <div className="px-4 py-4">
-          <h1 className="text-2xl font-bold text-matcha-900 dark:text-cream-50">Payment History</h1>
-          <p className="text-sm text-matcha-600 dark:text-cream-200 mt-1">
-            {payments.length} total transactions
-          </p>
+      <div className="glass-strong sticky top-0 z-10 mx-4 mt-4 rounded-2xl">
+        <div className="px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="glass-primary p-2.5 rounded-xl glass-glow">
+              <HistoryIcon className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">Payment History</h1>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                {payments.length} total transactions
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Summary Stats */}
       {payments.length > 0 && (
         <div className="mx-4 mt-4 grid grid-cols-3 gap-3">
-          <div className="bg-gradient-to-br from-matcha-500 to-matcha-600 dark:from-matcha-600 dark:to-matcha-700 rounded-ios-lg p-4 text-white shadow-lg">
-            <p className="text-xs opacity-90 mb-1">Total Paid</p>
-            <p className="text-lg font-bold">
-              ₱{totalPaid.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-            </p>
-          </div>
-          <div className="bg-gradient-to-br from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 rounded-ios-lg p-4 text-white shadow-lg">
-            <p className="text-xs opacity-90 mb-1">Principal</p>
-            <p className="text-lg font-bold">
-              ₱{totalPrincipal.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-            </p>
-          </div>
-          <div className="bg-gradient-to-br from-red-500 to-red-600 dark:from-red-600 dark:to-red-700 rounded-ios-lg p-4 text-white shadow-lg">
-            <p className="text-xs opacity-90 mb-1">Interest</p>
-            <p className="text-lg font-bold">
-              ₱{totalInterest.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-            </p>
-          </div>
+          <GlassCard variant="primary" glow>
+            <GlassCardContent className="p-4">
+              <p className="text-xs text-muted-foreground mb-1">Total Paid</p>
+              <p className="text-lg font-bold text-foreground">
+                ₱{totalPaid.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+              </p>
+            </GlassCardContent>
+          </GlassCard>
+          <GlassCard variant="subtle" className="border-green-500/30 bg-green-500/10">
+            <GlassCardContent className="p-4">
+              <p className="text-xs text-muted-foreground mb-1">Principal</p>
+              <p className="text-lg font-bold text-green-600 dark:text-green-400">
+                ₱{totalPrincipal.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+              </p>
+            </GlassCardContent>
+          </GlassCard>
+          <GlassCard variant="subtle" className="border-red-500/30 bg-red-500/10">
+            <GlassCardContent className="p-4">
+              <p className="text-xs text-muted-foreground mb-1">Interest</p>
+              <p className="text-lg font-bold text-red-600 dark:text-red-400">
+                ₱{totalInterest.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+              </p>
+            </GlassCardContent>
+          </GlassCard>
         </div>
       )}
 
       {/* Payment List */}
       {payments.length === 0 ? (
         <div className="flex flex-col items-center justify-center px-4 mt-20">
-          <div className="mb-4">
-            <BarChart3 className="h-16 w-16 text-matcha-600 dark:text-matcha-400" />
+          <div className="glass-primary p-6 rounded-2xl mb-4">
+            <BarChart3 className="h-16 w-16 text-primary" />
           </div>
-          <h2 className="text-xl font-semibold text-matcha-900 dark:text-cream-50 mb-2">
+          <h2 className="text-xl font-semibold text-foreground mb-2">
             No Payment History Yet
           </h2>
-          <p className="text-center text-matcha-700 dark:text-cream-200">
+          <p className="text-center text-muted-foreground">
             Your payment history will appear here once you start making payments.
           </p>
         </div>
       ) : (
         <div className="mx-4 mt-6">
-          <h3 className="text-lg font-semibold text-matcha-900 dark:text-cream-50 mb-3">
-            All Transactions
-          </h3>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="glass-primary p-2 rounded-xl">
+              <CreditCard className="h-4 w-4 text-primary" />
+            </div>
+            <h3 className="text-lg font-semibold text-foreground">
+              All Transactions
+            </h3>
+          </div>
           <div className="space-y-3">
             {payments.map((payment) => (
-              <div
+              <GlassCard 
                 key={payment.id}
-                className="bg-cream-50 dark:bg-matcha-800 rounded-xl shadow-md p-4 border-2 border-matcha-200 dark:border-matcha-700"
+                variant="subtle"
+                className="transition-colors"
               >
-                <div className="flex justify-between items-start gap-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      {payment.type === 'payment' ? 
-                        <CreditCard className="h-5 w-5 text-matcha-700 dark:text-matcha-300" /> : 
-                        <Edit3 className="h-5 w-5 text-matcha-700 dark:text-matcha-300" />
-                      }
-                      <p className="font-medium text-matcha-900 dark:text-cream-100">
-                        {payment.type === 'payment' ? 'Payment' : 'Adjustment'}
-                      </p>
-                    </div>
-                    <p className="text-sm text-matcha-600 dark:text-matcha-400">
-                      {payment.date.toLocaleDateString('en-PH', {
-                        weekday: 'short',
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
+                <GlassCardContent className="p-4">
+                  <div className="flex justify-between items-start gap-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="glass-primary p-1.5 rounded-lg">
+                          {payment.type === 'payment' ? 
+                            <CreditCard className="h-4 w-4 text-primary" /> : 
+                            <Edit3 className="h-4 w-4 text-primary" />
+                          }
+                        </div>
+                        <p className="font-medium text-foreground">
+                          {payment.type === 'payment' ? 'Payment' : 'Adjustment'}
+                        </p>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {payment.date.toLocaleDateString('en-PH', {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
                       })}
                     </p>
                     {payment.note && (
-                      <p className="text-xs text-matcha-600 dark:text-matcha-400 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {payment.note}
                       </p>
                     )}
                   </div>
                   <div className="text-right">
-                    <p className="text-xl font-bold text-matcha-900 dark:text-cream-100">
+                    <p className="text-xl font-bold text-foreground">
                       ₱{Math.abs(payment.amount).toLocaleString('en-PH', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
@@ -177,17 +201,19 @@ export const History = () => {
                   <button
                     onClick={() => handleDeleteClick(payment.id)}
                     disabled={deletingId === payment.id}
-                    className="flex-shrink-0 p-2 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-shrink-0 p-2.5 rounded-xl glass-button bg-destructive/10 hover:bg-destructive/20 text-destructive transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     title="Delete payment"
+                    style={{ transitionTimingFunction: "cubic-bezier(0.175, 0.885, 0.32, 1.275)" }}
                   >
                     {deletingId === payment.id ? (
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-5 h-5 border-2 border-destructive border-t-transparent rounded-full animate-spin"></div>
                     ) : (
                       <Trash2 className="h-5 w-5" />
                     )}
                   </button>
                 </div>
-              </div>
+                </GlassCardContent>
+              </GlassCard>
             ))}
           </div>
         </div>
@@ -195,16 +221,18 @@ export const History = () => {
 
       {/* Delete Confirmation Modal */}
       {confirmDeleteId && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-cream-50 dark:bg-matcha-800 rounded-2xl shadow-2xl max-w-md w-full p-6 border-2 border-matcha-300 dark:border-matcha-700">
+        <div className="fixed inset-0 glass-overlay flex items-center justify-center z-50 p-4">
+          <GlassCard variant="strong" className="max-w-md w-full p-6 animate-scale-in">
             <div className="text-center mb-6">
               <div className="mb-4 flex justify-center">
-                <AlertTriangle className="h-16 w-16 text-amber-500" />
+                <div className="glass-subtle p-4 rounded-2xl border-amber-500/30 bg-amber-500/10">
+                  <AlertTriangle className="h-12 w-12 text-amber-500" />
+                </div>
               </div>
-              <h2 className="text-2xl font-bold text-matcha-900 dark:text-cream-50 mb-2">
+              <h2 className="text-2xl font-semibold text-foreground mb-2">
                 Delete Payment?
               </h2>
-              <p className="text-matcha-700 dark:text-matcha-300">
+              <p className="text-muted-foreground">
                 Are you sure you want to delete this payment record? This action cannot be undone.
               </p>
             </div>
@@ -212,19 +240,19 @@ export const History = () => {
             <div className="flex gap-3">
               <button
                 onClick={handleCancelDelete}
-                className="flex-1 py-3 px-4 rounded-ios-md bg-matcha-200 dark:bg-matcha-700 text-matcha-900 dark:text-cream-100 font-semibold hover:bg-matcha-300 dark:hover:bg-matcha-600 transition-colors"
+                className="flex-1 py-3 px-4 rounded-xl glass-button text-foreground font-semibold cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmDelete}
                 disabled={!!deletingId}
-                className="flex-1 py-3 px-4 rounded-ios-md bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 py-3 px-4 rounded-xl bg-destructive text-destructive-foreground font-semibold hover:bg-destructive/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {deletingId ? 'Deleting...' : 'Delete'}
               </button>
             </div>
-          </div>
+          </GlassCard>
         </div>
       )}
     </div>

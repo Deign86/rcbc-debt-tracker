@@ -29,31 +29,31 @@ export const CelebrationAnimation = ({ milestone, onComplete }: CelebrationProps
         return {
           title: '🎯 25% Milestone Reached!',
           message: "You've paid off a quarter of your debt! Amazing progress!",
-          color: 'from-blue-500 to-cyan-500',
+          color: 'from-blue-500/80 to-cyan-500/80',
         };
       case 50:
         return {
           title: '🔥 Halfway There!',
           message: "You're 50% debt-free! The finish line is in sight!",
-          color: 'from-orange-500 to-red-500',
+          color: 'from-orange-500/80 to-red-500/80',
         };
       case 75:
         return {
           title: '💪 75% Complete!',
           message: "Three-quarters done! You're unstoppable!",
-          color: 'from-purple-500 to-pink-500',
+          color: 'from-purple-500/80 to-pink-500/80',
         };
       case 100:
         return {
           title: '🎉 DEBT FREE!',
           message: "Congratulations! You've completely paid off your debt!",
-          color: 'from-green-500 to-emerald-500',
+          color: 'from-green-500/80 to-emerald-500/80',
         };
       default:
         return {
           title: '🎊 Milestone Reached!',
           message: 'Keep up the great work!',
-          color: 'from-blue-500 to-purple-500',
+          color: 'from-primary/80 to-primary/60',
         };
     }
   };
@@ -68,7 +68,7 @@ export const CelebrationAnimation = ({ milestone, onComplete }: CelebrationProps
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 transition-opacity duration-300"
+        className="fixed inset-0 glass-overlay z-50 transition-opacity duration-300"
         onClick={handleDismiss}
       />
 
@@ -77,25 +77,33 @@ export const CelebrationAnimation = ({ milestone, onComplete }: CelebrationProps
         <div
           className={`
             pointer-events-auto
-            bg-gradient-to-br ${color}
-            text-white
+            glass-strong
             rounded-2xl
             shadow-2xl
             max-w-md
             w-full
             p-8
-            transform
             transition-all
             duration-300
-            ${isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}
+            animate-scale-in
+            overflow-hidden
+            relative
+            ${isVisible ? 'opacity-100' : 'opacity-0'}
           `}
         >
+          {/* Gradient overlay */}
+          <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-20 pointer-events-none`} />
+          
+          {/* Static orbs */}
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/15 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none" />
+
           {/* Confetti Animation */}
           <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
-            {[...Array(30)].map((_, i) => (
+            {[...Array(20)].map((_, i) => (
               <div
                 key={i}
-                className="absolute w-2 h-2 bg-white/80 rounded-full animate-confetti"
+                className="absolute w-2 h-2 bg-primary/60 rounded-full animate-confetti"
                 style={{
                   left: `${Math.random() * 100}%`,
                   animationDelay: `${Math.random() * 2}s`,
@@ -107,21 +115,21 @@ export const CelebrationAnimation = ({ milestone, onComplete }: CelebrationProps
 
           {/* Content */}
           <div className="relative z-10 text-center space-y-4">
-            <div className="text-6xl mb-4 animate-bounce">
+            <div className="text-6xl mb-4 glass-subtle w-24 h-24 rounded-2xl flex items-center justify-center mx-auto">
               {milestone === 100 ? '🎉' : milestone === 75 ? '💪' : milestone === 50 ? '🔥' : '🎯'}
             </div>
             
-            <h2 className="text-3xl font-bold mb-2">
+            <h2 className="text-3xl font-bold mb-2 text-foreground">
               {title}
             </h2>
             
-            <p className="text-lg text-white/90">
+            <p className="text-lg text-muted-foreground">
               {message}
             </p>
 
             {milestone === 100 && (
-              <div className="mt-6 pt-6 border-t border-white/30">
-                <p className="text-sm text-white/80 italic">
+              <div className="mt-6 pt-6 border-t border-white/20">
+                <p className="text-sm text-muted-foreground italic">
                   "The only way to do great work is to love what you do." - Steve Jobs
                 </p>
               </div>
@@ -129,7 +137,7 @@ export const CelebrationAnimation = ({ milestone, onComplete }: CelebrationProps
 
             <button
               onClick={handleDismiss}
-              className="mt-6 px-6 py-3 bg-white/20 hover:bg-white/30 rounded-lg transition-colors duration-200 backdrop-blur-sm font-medium"
+              className="mt-6 px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl transition-colors font-medium shadow-lg cursor-pointer"
             >
               Continue
             </button>

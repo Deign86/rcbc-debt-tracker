@@ -126,13 +126,22 @@ export const loadDebtState = async (): Promise<DebtState | null> => {
     
     // Finally, try Firestore if online
     if (offlineSyncService.getOnlineStatus()) {
-      return await fetchAndCacheDebtState();
+      try {
+        return await fetchAndCacheDebtState();
+      } catch (firestoreError) {
+        // If Firestore fails (permission denied, not configured, etc.), 
+        // gracefully return null and use defaults
+        console.warn('Firestore fetch failed, using local storage or defaults:', firestoreError);
+        return null;
+      }
     }
     
     return null;
   } catch (error) {
-    console.error('Error loading debt state:', error);
-    throw error;
+    // Don't throw for permission errors - just log and return null
+    // This allows the app to work without Firebase configuration
+    console.warn('Error loading debt state (using defaults):', error);
+    return null;
   }
 };
 
@@ -295,11 +304,17 @@ export const loadRecentPayments = async (limitCount: number = 50): Promise<Payme
       return payments;
     }
     
-    // No cache, fetch from Firestore
-    return await fetchAndCachePayments(limitCount);
+    // No cache, try to fetch from Firestore
+    try {
+      return await fetchAndCachePayments(limitCount);
+    } catch (firestoreError) {
+      console.warn('Firestore payments fetch failed, returning empty:', firestoreError);
+      return [];
+    }
   } catch (error) {
-    console.error('Error loading payments:', error);
-    throw error;
+    // Don't throw - return empty array so app can still function
+    console.warn('Error loading payments (returning empty):', error);
+    return [];
   }
 };
 
@@ -393,44 +408,62 @@ export const deletePayment = async (paymentId: string): Promise<void> => {
  */
 export const resetAllData = async (): Promise<void> => {
   try {
-    const batch = writeBatch(db);
-    
-    // Delete debt state
-    const debtStateRef = doc(db, DEBT_STATE_COLLECTION, DEBT_STATE_DOC_ID);
-    batch.delete(debtStateRef);
-    
-    // Get all payments and delete them
+    // Clear IndexedDB offline storage FIRST (this is the main source of persisted data)
     try {
-      const paymentsQuery = query(collection(db, PAYMENTS_COLLECTION));
-      const paymentsSnapshot = await getDocs(paymentsQuery);
-      
-      paymentsSnapshot.forEach((doc) => {
-        batch.delete(doc.ref);
-      });
-    } catch (error) {
-      console.warn('Error fetching payments for deletion:', error);
+      await offlineStorage.clear(STORES.DEBT_STATE);
+      await offlineStorage.clear(STORES.PAYMENTS);
+      await offlineStorage.clear(STORES.MILESTONES);
+      await offlineStorage.clearQueue();
+      console.log('Cleared IndexedDB offline storage');
+    } catch (offlineError) {
+      console.warn('Failed to clear offline storage:', offlineError);
     }
-    
-    // Get all milestones and delete them
-    try {
-      const milestonesQuery = query(collection(db, MILESTONES_COLLECTION));
-      const milestonesSnapshot = await getDocs(milestonesQuery);
-      
-      milestonesSnapshot.forEach((doc) => {
-        batch.delete(doc.ref);
-      });
-    } catch (error) {
-      console.warn('Error fetching milestones for deletion:', error);
-    }
-    
-    // Commit all deletions
-    await batch.commit();
-    
-    // Clear all caches after reset
+
+    // Clear all localStorage caches
     try {
       CacheService.clearAll();
+      console.log('Cleared localStorage cache');
     } catch (cacheError) {
       console.warn('Failed to clear cache:', cacheError);
+    }
+
+    // Only attempt Firestore operations if online
+    if (offlineSyncService.getOnlineStatus()) {
+      const batch = writeBatch(db);
+      
+      // Delete debt state
+      const debtStateRef = doc(db, DEBT_STATE_COLLECTION, DEBT_STATE_DOC_ID);
+      batch.delete(debtStateRef);
+      
+      // Get all payments and delete them
+      try {
+        const paymentsQuery = query(collection(db, PAYMENTS_COLLECTION));
+        const paymentsSnapshot = await getDocs(paymentsQuery);
+        
+        paymentsSnapshot.forEach((docSnap) => {
+          batch.delete(docSnap.ref);
+        });
+      } catch (error) {
+        console.warn('Error fetching payments for deletion:', error);
+      }
+      
+      // Get all milestones and delete them
+      try {
+        const milestonesQuery = query(collection(db, MILESTONES_COLLECTION));
+        const milestonesSnapshot = await getDocs(milestonesQuery);
+        
+        milestonesSnapshot.forEach((docSnap) => {
+          batch.delete(docSnap.ref);
+        });
+      } catch (error) {
+        console.warn('Error fetching milestones for deletion:', error);
+      }
+      
+      // Commit all deletions
+      await batch.commit();
+      console.log('Cleared Firestore data');
+    } else {
+      console.log('Offline: Firestore data will be cleared when back online');
     }
   } catch (error: any) {
     console.error('Error resetting data:', error);
@@ -512,7 +545,8 @@ export const loadMilestoneAchievements = async (): Promise<MilestoneAchievement[
     
     return milestones;
   } catch (error) {
-    console.error('Error loading milestone achievements:', error);
-    throw error;
+    // Don't throw - return empty array so app can still function without Firebase
+    console.warn('Error loading milestone achievements (returning empty):', error);
+    return [];
   }
 };

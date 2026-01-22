@@ -12,7 +12,6 @@ import { ResetModal } from './components/ResetModal';
 import { SuccessModal } from './components/SuccessModal';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { resetAllData } from './services/firestoreService';
-import { CacheService } from './services/cacheService';
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
 import { showError } from './utils/errorHandler';
@@ -30,7 +29,6 @@ function AppContent() {
   const handleResetConfirm = async () => {
     try {
       await resetAllData();
-      CacheService.clearAll();
       setIsResetModalOpen(false);
       setIsSuccessModalOpen(true);
     } catch (error) {

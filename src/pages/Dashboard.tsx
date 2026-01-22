@@ -19,7 +19,6 @@ import {
   markMilestoneCelebrated,
   loadMilestoneAchievements,
 } from '../services/firestoreService';
-import { CacheService } from '../services/cacheService';
 import { BILLING_CONSTANTS, getNextDueDate } from '../config/billingConstants';
 import {
   calculateMilestones,
@@ -93,7 +92,12 @@ export const Dashboard = () => {
           setCelebrationMilestone(uncelebrated.milestone);
         }
       } catch (error) {
-        showError(error, 'Failed to load debt data');
+        // Log error but don't show alert - app will use default values
+        console.warn('Failed to load debt data, using defaults:', error);
+        setInitialDebtState({
+          currentPrincipal: BILLING_CONSTANTS.INITIAL_DEBT,
+          minimumPayment: BILLING_CONSTANTS.INITIAL_MIN_PAYMENT,
+        });
       } finally {
         setLoading(false);
       }
@@ -220,7 +224,6 @@ export const Dashboard = () => {
   const handleResetConfirm = async () => {
     try {
       await resetAllData();
-      CacheService.clearAll();
       setIsResetModalOpen(false);
       // Reload the page to reset all state
       window.location.reload();
@@ -234,8 +237,8 @@ export const Dashboard = () => {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-matcha-600 mx-auto mb-4"></div>
-          <p className="text-matcha-700 dark:text-cream-300">Loading your debt data...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your debt data...</p>
         </div>
       </div>
     );
@@ -268,19 +271,19 @@ export const Dashboard = () => {
       )}
 
       {/* Header - Mobile Only */}
-      <div className="lg:hidden bg-matcha-500 dark:bg-matcha-800 shadow-sm sticky top-0 z-10">
+      <div className="lg:hidden bg-primary shadow-sm sticky top-0 z-10">
         <div className="px-3 xxs:px-4 sm:px-5 md:px-6 py-3 xxs:py-4 flex items-center justify-between">
           <div className="flex items-center gap-2 xxs:gap-3">
             <img src="https://firebasestorage.googleapis.com/v0/b/rcbc-debt-tracker-app.firebasestorage.app/o/assets%2Flogo.webp?alt=media&token=41fd0341-26dd-4553-a74c-2992068efe69" alt="Debt Repayment Logo" className="w-8 xxs:w-10 h-8 xxs:h-10 object-contain" />
             <div>
-              <h1 className="text-xl xxs:text-2xl sm:text-3xl font-bold text-white dark:text-cream-50">Debt Tracker</h1>
-              <p className="text-xs xxs:text-sm text-white/80 dark:text-cream-100/80">Financial Freedom Journey</p>
+              <h1 className="text-xl xxs:text-2xl sm:text-3xl font-bold text-primary-foreground">Debt Tracker</h1>
+              <p className="text-xs xxs:text-sm text-primary-foreground/80">Financial Freedom Journey</p>
             </div>
           </div>
           {/* Mobile Reset Button */}
           <button
             onClick={() => setIsResetModalOpen(true)}
-            className="lg:hidden px-2 xxs:px-3 py-1 xxs:py-1.5 text-xs xxs:text-sm bg-cream-100 dark:bg-matcha-900 text-matcha-800 dark:text-cream-200 rounded-lg hover:bg-cream-200 dark:hover:bg-matcha-700 transition-colors font-medium border border-matcha-300 dark:border-matcha-600 flex items-center gap-1"
+            className="lg:hidden px-2 xxs:px-3 py-1 xxs:py-1.5 text-xs xxs:text-sm bg-white/90 text-primary rounded-lg hover:bg-white transition-colors font-medium flex items-center gap-1 cursor-pointer"
             title="Reset all data"
           >
             <RotateCcw className="h-3 w-3 xxs:h-4 xxs:w-4" /> <span className="hidden xxs:inline">Reset</span>
@@ -323,19 +326,19 @@ export const Dashboard = () => {
         <div className="lg:col-span-12 xl:col-span-4">
           {payments.length > 0 ? (
             <div className="h-full">
-              <h3 className="text-base xxs:text-lg font-semibold text-matcha-800 dark:text-cream-100 mb-2 xxs:mb-3">Recent Activity</h3>
-              <div className="bg-cream-50 dark:bg-matcha-800 rounded-lg xxs:rounded-xl shadow-md overflow-hidden border border-matcha-200 dark:border-matcha-600 h-full max-h-[500px] sm:max-h-[600px] xl:max-h-[700px] overflow-y-auto">
+              <h3 className="text-base xxs:text-lg font-semibold text-foreground mb-2 xxs:mb-3">Recent Activity</h3>
+              <div className="bg-card rounded-lg xxs:rounded-xl shadow-md overflow-hidden border border-border h-full max-h-[500px] sm:max-h-[600px] xl:max-h-[700px] overflow-y-auto">
                 {payments.slice(0, 10).map((payment) => (
                   <div
                     key={payment.id}
-                    className="p-4 border-b border-matcha-200 dark:border-matcha-700 last:border-b-0"
+                    className="p-4 border-b border-border last:border-b-0"
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="font-medium text-matcha-800 dark:text-cream-100 flex items-center gap-2">
-                          {payment.type === 'payment' ? <><CreditCard className="h-4 w-4" /> Payment</> : <><Edit3 className="h-4 w-4" /> Adjustment</>}
+                        <p className="font-medium text-foreground flex items-center gap-2">
+                          {payment.type === 'payment' ? <><CreditCard className="h-4 w-4 text-primary" /> Payment</> : <><Edit3 className="h-4 w-4 text-primary" /> Adjustment</>}
                         </p>
-                        <p className="text-sm text-matcha-600 dark:text-cream-300 mt-1">
+                        <p className="text-sm text-muted-foreground mt-1">
                           {payment.date.toLocaleDateString('en-PH', {
                             month: 'short',
                             day: 'numeric',
@@ -343,21 +346,21 @@ export const Dashboard = () => {
                           })}
                         </p>
                         {payment.note && (
-                          <p className="text-xs text-matcha-500 dark:text-cream-400 mt-1">{payment.note}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{payment.note}</p>
                         )}
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-bold text-matcha-800 dark:text-cream-100">
+                        <p className="text-lg font-bold text-foreground">
                           ₱{Math.abs(payment.amount).toLocaleString('en-PH', {
                             maximumFractionDigits: 2,
                           })}
                         </p>
                         {payment.type === 'payment' && (
                           <div className="text-xs mt-1 space-y-0.5">
-                            <p className="text-green-600">
+                            <p className="text-green-600 dark:text-green-400">
                               Principal: ₱{payment.principal.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </p>
-                            <p className="text-red-600">
+                            <p className="text-red-600 dark:text-red-400">
                               Interest: ₱{payment.interest.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </p>
                           </div>
@@ -369,7 +372,7 @@ export const Dashboard = () => {
               </div>
             </div>
           ) : (
-            <div className="hidden xl:block bg-matcha-50 dark:bg-matcha-900/50 rounded-xl border-2 border-dashed border-matcha-200 dark:border-matcha-700 p-8 text-center h-full flex flex-col items-center justify-center text-matcha-600 dark:text-matcha-400">
+            <div className="hidden xl:block bg-primary/5 rounded-xl border-2 border-dashed border-border p-8 text-center h-full flex flex-col items-center justify-center text-muted-foreground">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>

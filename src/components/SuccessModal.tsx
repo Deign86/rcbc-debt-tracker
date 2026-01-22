@@ -19,10 +19,10 @@ interface SuccessModalProps {
 export const SuccessModal = ({ isOpen, title, message, onClose }: SuccessModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-sm">
+      <DialogContent className="sm:max-w-sm glass-strong border-0 rounded-2xl">
         <div className="flex justify-center pt-4 pb-2">
-          <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-            <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
+          <div className="w-16 h-16 glass-primary rounded-2xl flex items-center justify-center">
+            <CheckCircle2 className="w-8 h-8 text-primary" />
           </div>
         </div>
         
@@ -32,7 +32,10 @@ export const SuccessModal = ({ isOpen, title, message, onClose }: SuccessModalPr
         </DialogHeader>
 
         <DialogFooter className="mt-4">
-          <Button onClick={onClose} className="w-full">
+          <Button 
+            onClick={onClose} 
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg transition-colors"
+          >
             OK
           </Button>
         </DialogFooter>

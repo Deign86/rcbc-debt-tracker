@@ -1,9 +1,12 @@
+/* Inter - Optimal Typography for Liquid Glass / Spatial Computing UI */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   line-height: 1.5;
@@ -51,77 +54,61 @@ body {
   .smooth-corners-3xl { border-radius: 2.5rem; }
 }
 
-/* Modal animations */
-@keyframes scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.animate-scale-in {
-  animation: scale-in 0.2s ease-out;
-}
-
-
-
 @layer base {
   :root {
-    --background: 124 29% 96%; /* cream-50 */
-    --foreground: 126 26% 22%; /* matcha-800 */
-    --card: 60 20% 98%; /* cream-100 */
-    --card-foreground: 126 26% 22%; /* matcha-800 */
-    --popover: 60 20% 98%; /* cream-100 */
-    --popover-foreground: 126 26% 22%; /* matcha-800 */
-    --primary: 124 41% 42%; /* matcha-600 */
-    --primary-foreground: 60 20% 98%; /* cream-100 */
-    --secondary: 124 29% 86%; /* matcha-200 */
-    --secondary-foreground: 126 26% 22%; /* matcha-800 */
-    --muted: 124 29% 86%; /* matcha-200 */
-    --muted-foreground: 124 18% 33%; /* matcha-700 */
-    --accent: 124 21% 72%; /* matcha-300 */
-    --accent-foreground: 126 26% 22%; /* matcha-800 */
+    /* RCBC Blue Banking Theme - Light Mode */
+    --background: 200 25% 98%; /* Soft blue-gray background */
+    --foreground: 200 50% 15%; /* Dark blue-gray text */
+    --card: 0 0% 100%; /* Pure white cards */
+    --card-foreground: 200 50% 15%; /* Dark blue-gray text */
+    --popover: 0 0% 100%; /* White popovers */
+    --popover-foreground: 200 50% 15%;
+    --primary: 195 38% 47%; /* RCBC Blue #4A90A4 */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+    --secondary: 200 20% 94%; /* Light blue-gray secondary */
+    --secondary-foreground: 200 50% 20%;
+    --muted: 200 15% 92%; /* Muted background */
+    --muted-foreground: 200 20% 45%; /* Muted text */
+    --accent: 195 45% 85%; /* Light RCBC blue accent */
+    --accent-foreground: 195 38% 35%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 60 20% 98%;
-    --border: 124 21% 72%; /* matcha-300 */
-    --input: 124 29% 86%; /* matcha-200 */
-    --ring: 124 41% 42%; /* matcha-600 */
-    --chart-1: 124 41% 48%;
-    --chart-2: 124 29% 38%;
-    --chart-3: 126 26% 22%;
-    --chart-4: 124 21% 72%;
-    --chart-5: 124 29% 86%;
-    --radius: 1.25rem; /* iOS-style smooth corners */
+    --destructive-foreground: 0 0% 100%;
+    --border: 200 20% 88%; /* Soft border */
+    --input: 200 20% 94%;
+    --ring: 195 38% 47%; /* RCBC Blue ring */
+    --chart-1: 195 50% 50%;
+    --chart-2: 195 40% 40%;
+    --chart-3: 195 35% 30%;
+    --chart-4: 195 30% 65%;
+    --chart-5: 195 25% 75%;
+    --radius: 0.75rem; /* Modern rounded corners */
   }
   .dark {
-    --background: 126 26% 10%; /* matcha-900 */
-    --foreground: 60 20% 98%; /* cream-100 */
-    --card: 126 26% 22%; /* matcha-800 */
-    --card-foreground: 60 20% 98%; /* cream-100 */
-    --popover: 126 26% 22%; /* matcha-800 */
-    --popover-foreground: 60 20% 98%; /* cream-100 */
-    --primary: 124 41% 48%; /* matcha-500 */
-    --primary-foreground: 60 20% 98%; /* cream-100 */
-    --secondary: 124 18% 33%; /* matcha-700 */
-    --secondary-foreground: 60 20% 98%; /* cream-100 */
-    --muted: 124 18% 33%; /* matcha-700 */
-    --muted-foreground: 124 21% 72%; /* matcha-300 */
-    --accent: 124 18% 33%; /* matcha-700 */
-    --accent-foreground: 60 20% 98%; /* cream-100 */
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 60 20% 98%;
-    --border: 124 41% 42%; /* matcha-600 */
-    --input: 124 18% 33%; /* matcha-700 */
-    --ring: 124 41% 48%; /* matcha-500 */
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    /* RCBC Blue Banking Theme - Dark Mode */
+    --background: 200 40% 8%; /* Deep blue-black */
+    --foreground: 200 15% 95%; /* Light gray text */
+    --card: 200 35% 12%; /* Dark blue card */
+    --card-foreground: 200 15% 95%;
+    --popover: 200 35% 12%;
+    --popover-foreground: 200 15% 95%;
+    --primary: 195 45% 55%; /* Brighter RCBC blue for dark mode */
+    --primary-foreground: 200 40% 8%;
+    --secondary: 200 30% 18%; /* Dark secondary */
+    --secondary-foreground: 200 15% 90%;
+    --muted: 200 25% 16%;
+    --muted-foreground: 200 15% 65%;
+    --accent: 195 40% 25%; /* Dark accent */
+    --accent-foreground: 200 15% 95%;
+    --destructive: 0 62.8% 45%;
+    --destructive-foreground: 200 15% 95%;
+    --border: 200 30% 22%; /* Dark border */
+    --input: 200 30% 18%;
+    --ring: 195 45% 55%;
+    --chart-1: 195 60% 55%;
+    --chart-2: 195 50% 45%;
+    --chart-3: 195 45% 55%;
+    --chart-4: 195 40% 65%;
+    --chart-5: 195 35% 75%;
   }
 }
 
@@ -138,5 +125,263 @@ body {
   /* Ensure root element also transitions smoothly */
   :root {
     transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* ============================================
+   LIQUID GLASS DESIGN SYSTEM
+   Premium glassmorphism effects for banking UI
+   ============================================ */
+
+@layer components {
+  /* Base Glass Effect */
+  .glass {
+    @apply relative overflow-hidden;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .dark .glass {
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* Subtle Glass - Less blur, lighter effect */
+  .glass-subtle {
+    @apply relative overflow-hidden;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+
+  .dark .glass-subtle {
+    background: rgba(30, 41, 59, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  /* Strong Glass - More prominent effect */
+  .glass-strong {
+    @apply relative overflow-hidden;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(24px) saturate(200%) brightness(105%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(105%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.12),
+      inset 0 2px 0 rgba(255, 255, 255, 0.6),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  .dark .glass-strong {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.4),
+      inset 0 2px 0 rgba(255, 255, 255, 0.15),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  /* Primary Glass - With brand color tint */
+  .glass-primary {
+    @apply relative overflow-hidden;
+    background: linear-gradient(135deg, rgba(74, 144, 164, 0.15), rgba(74, 144, 164, 0.05));
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(74, 144, 164, 0.3);
+    box-shadow: 
+      0 8px 32px rgba(74, 144, 164, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(74, 144, 164, 0.1);
+  }
+
+  .dark .glass-primary {
+    background: linear-gradient(135deg, rgba(74, 144, 164, 0.25), rgba(74, 144, 164, 0.1));
+    border: 1px solid rgba(74, 144, 164, 0.4);
+    box-shadow: 
+      0 8px 32px rgba(74, 144, 164, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 -1px 0 rgba(74, 144, 164, 0.15);
+  }
+
+  /* Glass Card - Complete card styling */
+  .glass-card {
+    @apply glass rounded-2xl p-4;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .glass-card:hover {
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  /* Glass Button */
+  .glass-button {
+    @apply glass-subtle rounded-xl px-4 py-2 font-medium cursor-pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .glass-button:hover {
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  .dark .glass-button:hover {
+    background: rgba(30, 41, 59, 0.7);
+  }
+
+  /* Glass Nav - Navigation bar styling */
+  .glass-nav {
+    @apply glass-strong;
+    border-radius: 9999px;
+  }
+
+  /* Glass Input */
+  .glass-input {
+    @apply glass-subtle rounded-xl;
+    background: rgba(255, 255, 255, 0.5) !important;
+  }
+
+  .dark .glass-input {
+    background: rgba(30, 41, 59, 0.5) !important;
+  }
+
+  /* Glass Modal Overlay */
+  .glass-overlay {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Shimmer Effect - Animated light reflection */
+  .glass-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glass-shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
+  }
+
+  /* Glow Effect - Static subtle glow for emphasis (no hover animation) */
+  .glass-glow {
+    position: relative;
+  }
+
+  .glass-glow::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(74, 144, 164, 0.2), rgba(74, 144, 164, 0.05));
+    z-index: -1;
+    filter: blur(8px);
+    opacity: 0.5;
+  }
+}
+
+/* ============================================
+   UNIFIED ANIMATION SYSTEM
+   Clean, consistent motion design
+   ============================================ */
+
+/* Single entrance animation - applied to page-level containers only */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+/* Subtle scale for modals/sheets only */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s ease-out forwards;
+}
+
+/* Subtle pulse for important indicators only - use sparingly */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* Stagger delays - for list items entering together */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+.stagger-5 { animation-delay: 250ms; }
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .glass-shimmer::before,
+  .animate-fade-in,
+  .animate-scale-in,
+  .animate-pulse-subtle {
+    animation: none !important;
+  }
+  
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }
